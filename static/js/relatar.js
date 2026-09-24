@@ -2,33 +2,202 @@
 // MAPA
 // =========================
 
-const mapaRelato = L.map("mapa-relato").setView([-20.4711, -55.7874], 13);
+const mapaRelato = L.map("mapa-relato")
+    .setView([-20.4711, -55.7874], 13);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3vy9_1_0c9d8d43e5e259404039d999", {
-    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-    subdomains: "abcd"
-}).addTo(mapaRelato);
+L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=cb1_3vy9_1_0c9d8d43e5e259404039d999",
+    {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: "abcd"
+    }
+).addTo(mapaRelato);
 
 
 // =========================
-// MARCADOR
+// MARCADORES COLORIDOS
+// =========================
+
+function criarMarcador(cor) {
+
+    return L.divIcon({
+
+        className: "",
+
+        html: `
+            <div
+                class="marcador-cor"
+                style="border-color: ${cor};">
+            </div>
+        `,
+
+        iconSize: [20, 20],
+
+        iconAnchor: [10, 10]
+
+    });
+
+}
+
+const vermelho = criarMarcador("#D9534F");
+const amarelo = criarMarcador("#E8B94A");
+const verde = criarMarcador("#4CAF7D");
+const azul = criarMarcador("#5581C9");
+
+
+// =========================
+// MARCADOR DO NOVO RELATO
 // =========================
 
 let marcador = null;
+
+
+// =========================
+// RELATOS EXISTENTES
+// =========================
+
+fetch("/api/relatos")
+
+    .then(function (resposta) {
+
+        return resposta.json();
+
+    })
+
+    .then(function (relatos) {
+
+        relatos.forEach(function (relato) {
+
+            let icone;
+
+            if (relato.status === "Em análise") {
+
+                icone = amarelo;
+
+            } else if (
+                relato.status === "Concluído" ||
+                relato.status === "Concluída"
+            ) {
+
+                icone = verde;
+
+            } else {
+
+                icone = vermelho;
+
+            }
+
+
+            const marcadorRelato = L.marker(
+
+                [
+                    parseFloat(relato.latitude),
+                    parseFloat(relato.longitude)
+                ],
+
+                {
+                    icon: icone
+                }
+
+            ).addTo(mapaRelato);
+
+
+            // =========================
+            // FOTOS DO RELATO
+            // =========================
+
+            let imagens = "";
+
+            if (relato.fotos && relato.fotos.length > 0) {
+
+                relato.fotos.forEach(function (foto) {
+
+                    imagens += `
+                        <img
+                            src="/static/uploads/${foto}"
+                            alt="Foto do problema"
+                            style="
+                                width: 100%;
+                                max-width: 220px;
+                                margin-top: 10px;
+                                border-radius: 8px;
+                                display: block;
+                            "
+                        >
+                    `;
+
+                });
+
+            }
+
+
+            // =========================
+            // POPUP
+            // =========================
+
+            marcadorRelato.bindPopup(`
+
+                <strong>${relato.tipo}</strong>
+
+                <br><br>
+
+                ${relato.descricao}
+
+                <br><br>
+
+                <strong>Status:</strong>
+                ${relato.status}
+
+                <br>
+
+                <strong>Registrado em:</strong>
+                ${relato.data}
+
+                ${imagens}
+
+            `);
+
+        });
+
+    })
+
+    .catch(function (erro) {
+
+        console.error(
+            "Erro ao carregar os relatos:",
+            erro
+        );
+
+    });
+
+
+// =========================
+// ESCOLHER LOCAL DO NOVO RELATO
+// =========================
 
 mapaRelato.on("click", function (evento) {
 
     const latitude = evento.latlng.lat;
     const longitude = evento.latlng.lng;
 
+
+    // Remove somente o marcador
+    // do novo relato
+
     if (marcador !== null) {
+
         mapaRelato.removeLayer(marcador);
+
     }
 
-    marcador = L.marker([latitude, longitude])
+
+    marcador = L.marker(
+        [latitude, longitude]
+    )
         .addTo(mapaRelato)
         .bindPopup("Local do problema")
         .openPopup();
+
 });
 
 
@@ -36,9 +205,14 @@ mapaRelato.on("click", function (evento) {
 // TIPOS
 // =========================
 
-const buscaTipo = document.getElementById("busca-tipo");
-const opcoesTipo = document.querySelectorAll(".tipo-opcao");
-const tipoSelecionado = document.getElementById("tipo-selecionado");
+const buscaTipo =
+    document.getElementById("busca-tipo");
+
+const opcoesTipo =
+    document.querySelectorAll(".tipo-opcao");
+
+const tipoSelecionado =
+    document.getElementById("tipo-selecionado");
 
 let tipoAtual = "";
 
@@ -52,7 +226,9 @@ opcoesTipo.forEach(function (opcao) {
     opcao.addEventListener("click", function () {
 
         opcoesTipo.forEach(function (item) {
+
             item.classList.remove("selecionado");
+
         });
 
         opcao.classList.add("selecionado");
@@ -61,6 +237,7 @@ opcoesTipo.forEach(function (opcao) {
 
         tipoSelecionado.textContent =
             "Tipo selecionado: " + tipoAtual;
+
     });
 
 });
@@ -72,16 +249,24 @@ opcoesTipo.forEach(function (opcao) {
 
 buscaTipo.addEventListener("input", function () {
 
-    const pesquisa = buscaTipo.value.toLowerCase().trim();
+    const pesquisa =
+        buscaTipo.value.toLowerCase().trim();
+
 
     opcoesTipo.forEach(function (opcao) {
 
-        const texto = opcao.dataset.valor.toLowerCase();
+        const texto =
+            opcao.dataset.valor.toLowerCase();
+
 
         if (texto.includes(pesquisa)) {
+
             opcao.style.display = "block";
+
         } else {
+
             opcao.style.display = "none";
+
         }
 
     });
@@ -93,21 +278,34 @@ buscaTipo.addEventListener("input", function () {
 // FOTOS
 // =========================
 
-const campoFotos = document.getElementById("fotos");
-const previewFotos = document.getElementById("preview-fotos");
+const campoFotos =
+    document.getElementById("fotos");
+
+const previewFotos =
+    document.getElementById("preview-fotos");
 
 let fotosSelecionadas = [];
 
+
 campoFotos.addEventListener("change", function () {
 
-    const novasFotos = Array.from(campoFotos.files);
+    const novasFotos =
+        Array.from(campoFotos.files);
 
-    if (fotosSelecionadas.length + novasFotos.length > 3) {
 
-        alert("Você pode adicionar no máximo 3 fotos.");
+    if (
+        fotosSelecionadas.length +
+        novasFotos.length > 3
+    ) {
+
+        alert(
+            "Você pode adicionar no máximo 3 fotos."
+        );
 
         return;
+
     }
+
 
     novasFotos.forEach(function (foto) {
 
@@ -115,9 +313,11 @@ campoFotos.addEventListener("change", function () {
 
     });
 
+
     mostrarFotos();
 
     campoFotos.value = "";
+
 });
 
 
@@ -125,41 +325,56 @@ function mostrarFotos() {
 
     previewFotos.innerHTML = "";
 
-    fotosSelecionadas.forEach(function (foto, indice) {
 
-        const container = document.createElement("div");
+    fotosSelecionadas.forEach(
+        function (foto, indice) {
 
-        container.classList.add("foto-preview");
+            const container =
+                document.createElement("div");
 
-
-        const imagem = document.createElement("img");
-
-        imagem.src = URL.createObjectURL(foto);
-
-
-        const botao = document.createElement("button");
-
-        botao.type = "button";
-
-        botao.textContent = "×";
+            container.classList.add(
+                "foto-preview"
+            );
 
 
-        botao.addEventListener("click", function () {
+            const imagem =
+                document.createElement("img");
 
-            fotosSelecionadas.splice(indice, 1);
-
-            mostrarFotos();
-
-        });
+            imagem.src =
+                URL.createObjectURL(foto);
 
 
-        container.appendChild(imagem);
+            const botao =
+                document.createElement("button");
 
-        container.appendChild(botao);
+            botao.type = "button";
 
-        previewFotos.appendChild(container);
+            botao.textContent = "×";
 
-    });
+
+            botao.addEventListener(
+                "click",
+                function () {
+
+                    fotosSelecionadas.splice(
+                        indice,
+                        1
+                    );
+
+                    mostrarFotos();
+
+                }
+            );
+
+
+            container.appendChild(imagem);
+
+            container.appendChild(botao);
+
+            previewFotos.appendChild(container);
+
+        }
+    );
 
 }
 
@@ -168,130 +383,199 @@ function mostrarFotos() {
 // ENVIAR RELATO + FOTOS
 // =========================
 
-const botaoEnviar = document.getElementById("enviar-relato");
-
-botaoEnviar.addEventListener("click", async function () {
-
-    // Verificar tipo
-
-    if (tipoAtual === "") {
-
-        alert("Selecione o tipo do problema.");
-
-        return;
-    }
+const botaoEnviar =
+    document.getElementById(
+        "enviar-relato"
+    );
 
 
-    // Verificar descrição
-
-    const descricao =
-        document.getElementById("descricao").value.trim();
-
-    if (descricao === "") {
-
-        alert("Descreva o problema.");
-
-        return;
-    }
+botaoEnviar.addEventListener(
+    "click",
+    async function () {
 
 
-    // Verificar localização
+        // =========================
+        // VERIFICAR TIPO
+        // =========================
 
-    if (marcador === null) {
+        if (tipoAtual === "") {
 
-        alert("Clique no mapa para selecionar o local.");
+            alert(
+                "Selecione o tipo do problema."
+            );
 
-        return;
-    }
-
-
-    // Pegar localização
-
-    const posicao = marcador.getLatLng();
-
-
-    // Criar FormData
-
-    const dados = new FormData();
-
-
-    // Dados do relato
-
-    dados.append("tipo", tipoAtual);
-
-    dados.append("descricao", descricao);
-
-    dados.append("latitude", posicao.lat);
-
-    dados.append("longitude", posicao.lng);
-
-
-    // Adicionar fotos
-
-    fotosSelecionadas.forEach(function (foto) {
-
-        dados.append("fotos", foto);
-
-    });
-
-
-    // Enviar para Flask
-
-    const resposta = await fetch("/enviar-relato", {
-
-        method: "POST",
-
-        body: dados
-
-    });
-
-
-    const resultado = await resposta.json();
-
-
-    // Resultado
-
-    if (resultado.sucesso) {
-
-        alert(resultado.mensagem);
-
-
-        // Limpar descrição
-
-        document.getElementById("descricao").value = "";
-
-
-        // Limpar tipo
-
-        opcoesTipo.forEach(function (opcao) {
-
-            opcao.classList.remove("selecionado");
-
-        });
-
-        tipoAtual = "";
-
-        tipoSelecionado.textContent =
-            "Nenhum tipo selecionado.";
-
-
-        // Remover marcador
-
-        if (marcador !== null) {
-
-            mapaRelato.removeLayer(marcador);
-
-            marcador = null;
+            return;
 
         }
 
 
-        // Limpar fotos
+        // =========================
+        // VERIFICAR DESCRIÇÃO
+        // =========================
 
-        fotosSelecionadas = [];
+        const descricao =
+            document
+                .getElementById("descricao")
+                .value
+                .trim();
 
-        previewFotos.innerHTML = "";
+
+        if (descricao === "") {
+
+            alert(
+                "Descreva o problema."
+            );
+
+            return;
+
+        }
+
+
+        // =========================
+        // VERIFICAR LOCALIZAÇÃO
+        // =========================
+
+        if (marcador === null) {
+
+            alert(
+                "Clique no mapa para selecionar o local."
+            );
+
+            return;
+
+        }
+
+
+        // =========================
+        // PEGAR LOCALIZAÇÃO
+        // =========================
+
+        const posicao =
+            marcador.getLatLng();
+
+
+        // =========================
+        // FORM DATA
+        // =========================
+
+        const dados =
+            new FormData();
+
+
+        dados.append(
+            "tipo",
+            tipoAtual
+        );
+
+        dados.append(
+            "descricao",
+            descricao
+        );
+
+        dados.append(
+            "latitude",
+            posicao.lat
+        );
+
+        dados.append(
+            "longitude",
+            posicao.lng
+        );
+
+
+        // =========================
+        // ADICIONAR FOTOS
+        // =========================
+
+        fotosSelecionadas.forEach(
+            function (foto) {
+
+                dados.append(
+                    "fotos",
+                    foto
+                );
+
+            }
+        );
+
+
+        // =========================
+        // ENVIAR PARA FLASK
+        // =========================
+
+        const resposta =
+            await fetch(
+                "/enviar-relato",
+                {
+                    method: "POST",
+                    body: dados
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        // =========================
+        // RESULTADO
+        // =========================
+
+        if (resultado.sucesso) {
+
+            alert(
+                resultado.mensagem
+            );
+
+
+            // Limpar descrição
+
+            document
+                .getElementById("descricao")
+                .value = "";
+
+
+            // Limpar tipo
+
+            opcoesTipo.forEach(
+                function (opcao) {
+
+                    opcao.classList.remove(
+                        "selecionado"
+                    );
+
+                }
+            );
+
+
+            tipoAtual = "";
+
+
+            tipoSelecionado.textContent =
+                "Nenhum tipo selecionado.";
+
+
+            // Remover marcador
+            // do novo relato
+
+            if (marcador !== null) {
+
+                mapaRelato.removeLayer(
+                    marcador
+                );
+
+                marcador = null;
+
+            }
+
+
+            // Limpar fotos
+
+            fotosSelecionadas = [];
+
+            previewFotos.innerHTML = "";
+
+        }
 
     }
-
-});
+);

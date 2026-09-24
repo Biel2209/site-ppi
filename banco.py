@@ -19,6 +19,15 @@ def criar_banco():
         )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS fotos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        relato_id INTEGER NOT NULL,
+        arquivo TEXT NOT NULL,
+        FOREIGN KEY (relato_id) REFERENCES relatos(id)
+    )
+""")
+    
     conexao.commit()
     conexao.close()
 

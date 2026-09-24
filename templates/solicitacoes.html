@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Minhas solicitações - Mapa da Cidade</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/solicitacoes.css') }}">
+
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="logo">
+            MAPA DA CIDADE
+        </div>
+
+        <nav class="menu">
+
+            <a href="/">
+                Início
+            </a>
+
+            <a href="/mapa">
+                Mapa
+            </a>
+
+            <a href="/obras">
+                Obras
+            </a>
+
+            <a href="/relatar">
+                Relatar problema
+            </a>
+
+            <a href="/solicitacoes" class="ativo">
+                Minhas solicitações
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <section class="titulo">
+
+            <h1>Minhas solicitações</h1>
+
+            <p>
+                Acompanhe os problemas e solicitações que foram registrados.
+            </p>
+
+        </section>
+
+
+        <section class="lista-solicitacoes">
+
+            {% if relatos %}
+
+                {% for item in relatos %}
+
+                    <div class="card-solicitacao">
+
+                        <div class="topo-card">
+
+                            <span class="status">
+                                {{ item["relato"]["status"] }}
+                            </span>
+
+                            <span class="data">
+                                {{ item["relato"]["data"] }}
+                            </span>
+
+                        </div>
+
+
+                        <h2>
+                            {{ item["relato"]["tipo"] }}
+                        </h2>
+
+
+                        <p class="descricao">
+                            {{ item["relato"]["descricao"] }}
+                        </p>
+
+
+                        {% if item["fotos"] %}
+
+                            <div class="fotos-solicitacao">
+
+                                {% for foto in item["fotos"] %}
+
+                                    <img
+                                        src="{{ url_for('static', filename='uploads/' + foto['arquivo']) }}"
+                                        alt="Foto do problema relatado"
+                                    >
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="localizacao">
+
+                            <span>
+                                Localização
+                            </span>
+
+                            <strong>
+                                {{ "%.5f"|format(item["relato"]["latitude"]|float) }},
+                                {{ "%.5f"|format(item["relato"]["longitude"]|float) }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="sem-solicitacoes">
+
+                    <h2>
+                        Nenhuma solicitação encontrada
+                    </h2>
+
+                    <p>
+                        Quando você enviar um relato, ele aparecerá aqui.
+                    </p>
+
+                    <a href="/relatar">
+                        Relatar um problema
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

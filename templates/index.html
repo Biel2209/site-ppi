@@ -68,23 +68,54 @@
         <section class="indicadores">
 
             <div class="card-indicador">
-                <span class="numero">12</span>
-                <span class="descricao">Obras em andamento</span>
+
+                <span class="numero">
+                    {{ obras_andamento }}
+                </span>
+
+                <span class="descricao">
+                    Obras em andamento
+                </span>
+
             </div>
 
-            <div class="card-indicador">
-                <span class="numero">35</span>
-                <span class="descricao">Obras concluídas</span>
-            </div>
 
             <div class="card-indicador">
-                <span class="numero">8</span>
-                <span class="descricao">Problemas registrados</span>
+
+                <span class="numero">
+                    {{ obras_concluidas }}
+                </span>
+
+                <span class="descricao">
+                    Obras concluídas
+                </span>
+
             </div>
 
+
             <div class="card-indicador">
-                <span class="numero">5</span>
-                <span class="descricao">Solicitações em análise</span>
+
+                <span class="numero">
+                    {{ problemas_registrados }}
+                </span>
+
+                <span class="descricao">
+                    Problemas registrados
+                </span>
+
+            </div>
+
+
+            <div class="card-indicador">
+
+                <span class="numero">
+                    {{ solicitacoes_analise }}
+                </span>
+
+                <span class="descricao">
+                    Solicitações em análise
+                </span>
+
             </div>
 
         </section>

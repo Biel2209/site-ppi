@@ -6,14 +6,19 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
 }).addTo(mapa);
 
 
-// Cria os marcadores coloridos
+// =========================
+// MARCADORES COLORIDOS
+// =========================
+
 function criarMarcador(cor) {
+
     return L.divIcon({
         className: "",
         html: `<div class="marcador-cor" style="border-color: ${cor};"></div>`,
         iconSize: [20, 20],
         iconAnchor: [10, 10]
     });
+
 }
 
 const azul = criarMarcador("#5581C9");
@@ -22,8 +27,12 @@ const vermelho = criarMarcador("#D9534F");
 const amarelo = criarMarcador("#E8B94A");
 
 
-// Tenta descobrir a localização do usuário
+// =========================
+// LOCALIZAÇÃO DO USUÁRIO
+// =========================
+
 navigator.geolocation.getCurrentPosition(
+
     function (posicao) {
 
         const latitude = posicao.coords.latitude;
@@ -35,6 +44,7 @@ navigator.geolocation.getCurrentPosition(
             .addTo(mapa)
             .bindPopup("Você está aqui")
             .openPopup();
+
     },
 
     function () {
@@ -45,57 +55,100 @@ navigator.geolocation.getCurrentPosition(
             .setLatLng([-20.4711, -55.7874])
             .setContent("Não foi possível acessar sua localização.")
             .openOn(mapa);
+
     }
+
 );
 
 
-// Obra em andamento
-const obra = L.marker([-20.4711, -55.7874], {
-    icon: azul
-}).addTo(mapa);
+// =========================
+// RELATOS DO BANCO DE DADOS
+// =========================
 
-obra.bindPopup(`
-    <strong>Pavimentação da rua</strong><br>
-    Bairro: Centro<br>
-    Status: Em andamento<br>
-    Previsão: Dezembro/2026
-`);
+fetch("/api/relatos")
 
+    .then(function (resposta) {
 
-// Obra concluída
-const obra2 = L.marker([-20.4685, -55.7905], {
-    icon: verde
-}).addTo(mapa);
+        return resposta.json();
 
-obra2.bindPopup(`
-    <strong>Reforma da praça</strong><br>
-    Bairro: Alto<br>
-    Status: Concluída<br>
-    Conclusão: Setembro/2026
-`);
+    })
 
+    .then(function (relatos) {
 
-// Problema
-const problema = L.marker([-20.4752, -55.7818], {
-    icon: vermelho
-}).addTo(mapa);
+        relatos.forEach(function (relato) {
 
-problema.bindPopup(`
-    <strong>Buraco na via</strong><br>
-    Bairro: Guanandi<br>
-    Status: Problema registrado<br>
-    Registrado em: Setembro/2026
-`);
+            let icone;
+
+            if (relato.status === "Em análise") {
+
+                icone = amarelo;
+
+            } else {
+
+                icone = vermelho;
+
+            }
 
 
-// Problema em análise
-const problema2 = L.marker([-20.4658, -55.7835], {
-    icon: amarelo
-}).addTo(mapa);
+            const marcador = L.marker(
+                [
+                    parseFloat(relato.latitude),
+                    parseFloat(relato.longitude)
+                ],
+                {
+                    icon: icone
+                }
+            ).addTo(mapa);
 
-problema2.bindPopup(`
-    <strong>Iluminação pública danificada</strong><br>
-    Bairro: Nova Aquidauana<br>
-    Status: Em análise<br>
-    Registrado em: Setembro/2026
-`);
+
+            let imagens = "";
+
+            relato.fotos.forEach(function (foto) {
+
+                imagens += `
+                    <img
+                        src="/static/uploads/${foto}"
+                        alt="Foto do problema"
+                        style="
+                            width: 100%;
+                            max-width: 250px;
+                            margin-top: 10px;
+                            border-radius: 8px;
+                        "
+                    >
+                `;
+
+            });
+
+
+            marcador.bindPopup(`
+
+                <strong>${relato.tipo}</strong>
+
+                <br><br>
+
+                ${relato.descricao}
+
+                <br><br>
+
+                <strong>Status:</strong>
+                ${relato.status}
+
+                <br>
+
+                <strong>Registrado em:</strong>
+                ${relato.data}
+
+                ${imagens}
+
+            `);
+
+        });
+
+    })
+
+    .catch(function (erro) {
+
+        console.error("Erro ao carregar os relatos:", erro);
+
+    });

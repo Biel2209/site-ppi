@@ -1,0 +1,229 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F3F5F7;
+    color: #263238;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    height: 70px;
+    background: #FFFFFF;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 50px;
+
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #5581C9;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #263238;
+    font-size: 15px;
+}
+
+.menu a:hover {
+    color: #5581C9;
+}
+
+.menu .ativo {
+    color: #5581C9;
+    font-weight: bold;
+}
+
+
+/* =========================
+   CONTEÚDO
+========================= */
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 50px;
+}
+
+.titulo {
+    margin-bottom: 35px;
+}
+
+.titulo h1 {
+    margin: 0 0 10px;
+    font-size: 38px;
+}
+
+.titulo p {
+    margin: 0;
+    font-size: 17px;
+    color: #5F6B72;
+}
+
+
+/* =========================
+   LISTA
+========================= */
+
+.lista-solicitacoes {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.card-solicitacao {
+    background: #FFFFFF;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+
+    padding: 25px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.topo-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.status {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background: #FFF4D6;
+    color: #A47D16;
+
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.data {
+    color: #5F6B72;
+    font-size: 13px;
+}
+
+.card-solicitacao h2 {
+    margin: 0 0 10px;
+
+    font-size: 21px;
+}
+
+.descricao {
+    margin: 0;
+
+    color: #5F6B72;
+
+    line-height: 1.5;
+}
+
+.localizacao {
+    margin-top: 20px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #E5E7EB;
+
+    display: flex;
+    justify-content: space-between;
+
+    font-size: 14px;
+}
+
+.localizacao span {
+    color: #5F6B72;
+}
+
+.localizacao strong {
+    color: #263238;
+}
+
+
+/* =========================
+   SEM SOLICITAÇÕES
+========================= */
+
+.sem-solicitacoes {
+    background: #FFFFFF;
+
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+
+    padding: 50px;
+
+    text-align: center;
+}
+
+.sem-solicitacoes h2 {
+    margin-top: 0;
+}
+
+.sem-solicitacoes p {
+    color: #5F6B72;
+}
+
+.sem-solicitacoes a {
+    display: inline-block;
+
+    margin-top: 15px;
+
+    padding: 12px 18px;
+
+    border-radius: 8px;
+
+    background: #3E8C83;
+    color: #FFFFFF;
+
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* =========================
+   FOTOS
+========================= */
+
+.fotos-solicitacao {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.fotos-solicitacao img {
+    width: 140px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #D9DEE3;
+}
