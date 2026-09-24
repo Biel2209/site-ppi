@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa da Cidade</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="logo">
+            MAPA DA CIDADE
+        </div>
+
+        <nav class="menu">
+            <a href="/" class="ativo">Início</a>
+            <a href="/mapa">Mapa</a>
+            <a href="/obras">Obras</a>
+            <a href="/relatar">Relatar problema</a>
+            <a href="/solicitacoes">Minhas solicitações</a>
+        </nav>
+
+    </header>
+
+    <main>
+        <section class="hero">
+
+            <div class="hero-text">
+
+                <h1>Acompanhe as obras e melhorias da sua cidade</h1>
+
+                <p>
+                    Consulte obras públicas, acompanhe o andamento dos projetos
+                    e informe problemas de infraestrutura de forma simples e rápida.
+                </p>
+
+                <div class="hero-botoes">
+                    <a href="/mapa" class="botao principal">
+                        Explorar mapa
+                    </a>
+
+                    <a href="/relatar" class="botao secundario">
+                        Relatar um problema
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="hero-mapa">
+
+                <div class="mapa-placeholder">
+                    <span>Mapa da cidade</span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="indicadores">
+
+            <div class="card-indicador">
+                <span class="numero">12</span>
+                <span class="descricao">Obras em andamento</span>
+            </div>
+
+            <div class="card-indicador">
+                <span class="numero">35</span>
+                <span class="descricao">Obras concluídas</span>
+            </div>
+
+            <div class="card-indicador">
+                <span class="numero">8</span>
+                <span class="descricao">Problemas registrados</span>
+            </div>
+
+            <div class="card-indicador">
+                <span class="numero">5</span>
+                <span class="descricao">Solicitações em análise</span>
+            </div>
+
+        </section>
+
+        <section class="secao-mapa">
+
+            <div class="titulo-secao">
+                <h2>Veja o que está acontecendo na cidade</h2>
+
+                <p>
+                    Acompanhe obras e problemas de infraestrutura
+                    diretamente pelo mapa.
+                </p>
+            </div>
+
+            <div class="mapa-preview">
+
+                <div class="mapa-placeholder">
+                    <span>Mapa da cidade</span>
+                </div>
+
+            </div>
+
+            <div class="centralizar-botao">
+                <a href="/mapa" class="botao principal">
+                    Ver mapa completo
+                </a>
+            </div>
+
+        </section>
+    </main>
+
+</body>
+<footer class="footer">
+
+    <div class="footer-conteudo">
+
+        <div>
+            <strong>MAPA DA CIDADE</strong>
+
+            <p>
+                Informações sobre obras e infraestrutura pública.
+            </p>
+        </div>
+
+        <div class="footer-direitos">
+            <p>Projeto acadêmico</p>
+        </div>
+
+    </div>
+
+</footer> 
+
+</html>
