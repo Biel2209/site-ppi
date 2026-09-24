@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Obras - Mapa da Cidade</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/obras.css') }}">
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="logo">
+            MAPA DA CIDADE
+        </div>
+
+        <nav class="menu">
+            <a href="/">Início</a>
+            <a href="/mapa">Mapa</a>
+            <a href="/obras" class="ativo">Obras</a>
+            <a href="/relatar">Relatar problema</a>
+            <a href="/solicitacoes">Minhas solicitações</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <section class="titulo">
+
+            <h1>Obras públicas</h1>
+
+            <p>
+                Acompanhe as obras e melhorias que estão acontecendo na cidade.
+            </p>
+
+        </section>
+
+
+        <section class="filtros">
+
+            <button class="filtro ativo">Todas</button>
+            <button class="filtro">Em andamento</button>
+            <button class="filtro">Concluídas</button>
+            <button class="filtro">Em análise</button>
+
+        </section>
+
+
+        <section class="lista-obras">
+
+            <section class="lista-obras">
+
+                <div class="card-obra" data-status="andamento">
+
+                    <div class="obra-topo">
+                        <span class="status andamento">Em andamento</span>
+                    </div>
+
+                    <h2>Pavimentação da rua</h2>
+
+                    <p class="bairro">Bairro: Centro</p>
+
+                    <p>
+                        Obra de pavimentação para melhorar as condições
+                        de circulação e segurança da via.
+                    </p>
+
+                    <div class="obra-info">
+                        <span>Previsão</span>
+                        <strong>Dezembro/2026</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="card-obra" data-status="concluida">
+
+                    <div class="obra-topo">
+                        <span class="status concluida">Concluída</span>
+                    </div>
+
+                    <h2>Reforma da praça</h2>
+
+                    <p class="bairro">Bairro: Alto</p>
+
+                    <p>
+                        Reforma e revitalização do espaço público
+                        para uso dos moradores.
+                    </p>
+
+                    <div class="obra-info">
+                        <span>Conclusão</span>
+                        <strong>Setembro/2026</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="card-obra" data-status="analise">
+
+                    <div class="obra-topo">
+                        <span class="status analise">Em análise</span>
+                    </div>
+
+                    <h2>Melhoria na iluminação</h2>
+
+                    <p class="bairro">Bairro: Nova Aquidauana</p>
+
+                    <p>
+                        Projeto para melhoria da iluminação pública
+                        em pontos identificados pelos moradores.
+                    </p>
+
+                    <div class="obra-info">
+                        <span>Status</span>
+                        <strong>Em análise</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="card-obra" data-status="andamento">
+
+                    <div class="obra-topo">
+                        <span class="status andamento">Em andamento</span>
+                    </div>
+
+                    <h2>Manutenção da via</h2>
+
+                    <p class="bairro">Bairro: Guanandi</p>
+
+                    <p>
+                        Serviços de manutenção e recuperação
+                        da pavimentação da via.
+                    </p>
+
+                    <div class="obra-info">
+                        <span>Previsão</span>
+                        <strong>Novembro/2026</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</body>
+
+<script src="{{ url_for('static', filename='js/obras.js') }}"></script>
+
+</html>

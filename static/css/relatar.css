@@ -1,0 +1,297 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F3F5F7;
+    color: #263238;
+}
+
+
+/* HEADER */
+
+.header {
+    height: 70px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #5581C9;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #263238;
+    font-size: 15px;
+}
+
+.menu a:hover {
+    color: #5581C9;
+}
+
+.menu .ativo {
+    color: #5581C9;
+    font-weight: bold;
+}
+
+
+/* CONTEÚDO */
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 50px;
+}
+
+.titulo {
+    margin-bottom: 35px;
+}
+
+.titulo h1 {
+    margin: 0 0 10px;
+    font-size: 38px;
+}
+
+.titulo p {
+    margin: 0;
+    font-size: 17px;
+    color: #5F6B72;
+}
+
+
+/* ÁREA DO RELATO */
+
+.relato {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 25px;
+    align-items: start;
+}
+
+.mapa-relato,
+.formulario {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.mapa-relato h2,
+.formulario h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+}
+
+.mapa-relato p {
+    margin: 0 0 20px;
+    color: #5F6B72;
+    font-size: 14px;
+}
+
+
+/* MAPA */
+
+#mapa-relato {
+    width: 100%;
+    height: 480px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+
+/* FORMULÁRIO */
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+}
+
+.formulario label {
+    margin-top: 20px;
+    margin-bottom: 7px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.formulario select,
+.formulario textarea {
+    width: 100%;
+    border: 1px solid #D9DEE3;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #263238;
+    background: #FFFFFF;
+}
+
+.formulario select:focus,
+.formulario textarea:focus {
+    outline: none;
+    border-color: #5581C9;
+}
+
+.formulario textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+
+/* BOTÃO */
+
+#enviar-relato {
+    margin-top: 25px;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    background: #3E8C83;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#enviar-relato:hover {
+    background: #33766E;
+}
+
+#busca-tipo {
+    width: 100%;
+    border: 1px solid #D9DEE3;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #263238;
+    margin-bottom: 15px;
+}
+
+#busca-tipo:focus {
+    outline: none;
+    border-color: #5581C9;
+}
+
+#lista-tipos {
+    max-height: 330px;
+    overflow-y: auto;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.categoria {
+    margin-bottom: 20px;
+}
+
+.categoria:last-child {
+    margin-bottom: 0;
+}
+
+.categoria h3 {
+    margin: 5px 0 10px;
+    font-size: 14px;
+    color: #5F6B72;
+}
+
+.tipo-opcao {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: #F3F5F7;
+    color: #263238;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.tipo-opcao:hover {
+    background: #E8EEF9;
+    color: #5581C9;
+}
+
+.tipo-opcao.selecionado {
+    background: #5581C9;
+    color: #FFFFFF;
+}
+
+#tipo-selecionado {
+    margin: 12px 0 0;
+    font-size: 13px;
+    color: #5F6B72;
+}
+
+.upload-fotos {
+    border: 1px dashed #C9D0D6;
+    border-radius: 10px;
+    padding: 18px;
+    background: #F9FAFB;
+}
+
+.upload-fotos input[type="file"] {
+    width: 100%;
+    font-size: 14px;
+}
+
+.upload-fotos p {
+    margin: 10px 0 15px;
+    color: #5F6B72;
+    font-size: 13px;
+}
+
+#preview-fotos {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.foto-preview {
+    position: relative;
+    width: 90px;
+    height: 90px;
+}
+
+.foto-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #D9DEE3;
+}
+
+.foto-preview button {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+
+    width: 22px;
+    height: 22px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #D9534F;
+    color: white;
+
+    font-size: 16px;
+    line-height: 20px;
+
+    cursor: pointer;
+}

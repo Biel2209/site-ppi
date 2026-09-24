@@ -1,0 +1,184 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #F3F5F7;
+    color: #263238;
+}
+
+
+/* HEADER */
+
+.header {
+    height: 70px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #5581C9;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #263238;
+    font-size: 15px;
+}
+
+.menu a:hover {
+    color: #5581C9;
+}
+
+.menu .ativo {
+    color: #5581C9;
+    font-weight: bold;
+}
+
+
+/* CONTEÚDO */
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 50px;
+}
+
+.titulo {
+    margin-bottom: 35px;
+}
+
+.titulo h1 {
+    margin: 0 0 10px;
+    font-size: 38px;
+}
+
+.titulo p {
+    margin: 0;
+    font-size: 17px;
+    color: #5F6B72;
+}
+
+
+/* FILTROS */
+
+.filtros {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 35px;
+}
+
+.filtro {
+    border: 1px solid #D9DEE3;
+    background: #FFFFFF;
+    color: #263238;
+    padding: 11px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filtro:hover {
+    border-color: #5581C9;
+    color: #5581C9;
+}
+
+.filtro.ativo {
+    background: #5581C9;
+    border-color: #5581C9;
+    color: #FFFFFF;
+}
+
+
+/* LISTA DE OBRAS */
+
+.lista-obras {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* CARDS DAS OBRAS */
+
+.card-obra {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.obra-topo {
+    margin-bottom: 18px;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status.andamento {
+    background: #E8EEF9;
+    color: #5581C9;
+}
+
+.status.concluida {
+    background: #E5F3EC;
+    color: #4CAF7D;
+}
+
+.status.analise {
+    background: #FFF4D6;
+    color: #A47D16;
+}
+
+.card-obra h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+}
+
+.card-obra p {
+    color: #5F6B72;
+    line-height: 1.5;
+}
+
+.card-obra .bairro {
+    margin: 0 0 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #263238;
+}
+
+.obra-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.obra-info span {
+    color: #5F6B72;
+}
+
+.obra-info strong {
+    color: #263238;
+}

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Relatar problema - Mapa da Cidade</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/relatar.css') }}">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="logo">
+            MAPA DA CIDADE
+        </div>
+
+        <nav class="menu">
+            <a href="/">Início</a>
+            <a href="/mapa">Mapa</a>
+            <a href="/obras">Obras</a>
+            <a href="/relatar" class="ativo">Relatar problema</a>
+            <a href="/solicitacoes">Minhas solicitações</a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        <section class="titulo">
+
+            <h1>Relatar um problema</h1>
+
+            <p>
+                Informe um problema de infraestrutura encontrado na cidade.
+            </p>
+
+        </section>
+
+
+        <section class="relato">
+
+            <div class="mapa-relato">
+                <h2>Onde está o problema?</h2>
+
+                <p>
+                    Clique no mapa para selecionar o local.
+                </p>
+
+                <div id="mapa-relato"></div>
+            </div>
+
+
+            <div class="formulario">
+
+                <h2>Informações do problema</h2>
+                <label for="tipo">Tipo de problema ou obra</label>
+
+                <input
+                    type="text"
+                    id="busca-tipo"
+                    placeholder="Procure por um problema ou obra..."
+                    autocomplete="off"
+                >
+
+                <div id="lista-tipos">
+
+                    <div class="categoria">
+                        <h3>Problemas de infraestrutura</h3>
+
+                        <button type="button" class="tipo-opcao" data-valor="Buraco na via">
+                            Buraco na via
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Asfalto danificado">
+                            Asfalto danificado
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Calçada danificada">
+                            Calçada danificada
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Alagamento">
+                            Alagamento
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Iluminação pública">
+                            Iluminação pública
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Semáforo com problema">
+                            Semáforo com problema
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Sinalização danificada">
+                            Sinalização danificada
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Fiação exposta">
+                            Fiação exposta
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Vazamento de água">
+                            Vazamento de água
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Lixo ou entulho acumulado">
+                            Lixo ou entulho acumulado
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Árvore caída">
+                            Árvore caída
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Árvore oferecendo risco">
+                            Árvore oferecendo risco
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Problema em ponto de ônibus">
+                            Problema em ponto de ônibus
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Problema de acessibilidade">
+                            Problema de acessibilidade
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Obstrução da via">
+                            Obstrução da via
+                        </button>
+                    </div>
+
+
+                    <div class="categoria">
+                        <h3>Obras e serviços públicos</h3>
+
+                        <button type="button" class="tipo-opcao" data-valor="Obra pública em andamento">
+                            Obra pública em andamento
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Obra pública abandonada">
+                            Obra pública abandonada
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Obra atrasada">
+                            Obra atrasada
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Obra com problema">
+                            Obra com problema
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Pavimentação">
+                            Pavimentação
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Reforma de praça">
+                            Reforma de praça
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Construção de escola">
+                            Construção de escola
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Construção de unidade de saúde">
+                            Construção de unidade de saúde
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Manutenção de prédio público">
+                            Manutenção de prédio público
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Manutenção de ponte">
+                            Manutenção de ponte
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Manutenção de estrada">
+                            Manutenção de estrada
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Obras de drenagem">
+                            Obras de drenagem
+                        </button>
+
+                        <button type="button" class="tipo-opcao" data-valor="Obras de saneamento">
+                            Obras de saneamento
+                        </button>
+                    </div>
+
+                </div>
+
+                <p id="tipo-selecionado">
+                    Nenhum tipo selecionado.
+                </p>
+
+
+                <label for="descricao">Descrição</label>
+
+                <textarea
+                    id="descricao"
+                    placeholder="Descreva o problema encontrado..."
+                ></textarea>
+
+                <label for="fotos">Fotos do problema</label>
+
+                <div class="upload-fotos">
+
+                    <input
+                        type="file"
+                        id="fotos"
+                        accept="image/*"
+                        multiple
+                    >
+
+                    <p>
+                        Adicione até 3 fotos para ajudar a identificar o problema.
+                    </p>
+
+                    <div id="preview-fotos"></div>
+
+                </div>
+
+
+                <button type="button" id="enviar-relato">
+                    Enviar relato
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="{{ url_for('static', filename='js/relatar.js') }}"></script>
+
+</body>
+
+</html>

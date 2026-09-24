@@ -2,36 +2,61 @@
 <html lang="pt-br">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Mapa - Mapa da Cidade</title>
 
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mapa.css') }}">
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/mapa.css') }}"
-    >
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 </head>
 
 <body>
-    
-    <div id="mapa"></div>
+
+    <header class="header">
+
+        <div class="logo">
+            MAPA DA CIDADE
+        </div>
+
+        <nav class="menu">
+
+            <a href="/">Início</a>
+
+            <a href="/mapa" class="ativo">
+                Mapa
+            </a>
+
+            <a href="/obras">
+                Obras
+            </a>
+
+            <a href="/relatar">
+                Relatar problema
+            </a>
+
+            <a href="/solicitacoes">
+                Minhas solicitações
+            </a>
+
+        </nav>
+
+    </header>
 
 
-    <!-- JavaScript do Leaflet -->
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
+    <main>
 
-    <!-- Nosso JavaScript -->
-    <script
-        src="{{ url_for('static', filename='js/mapa.js') }}">
-    </script>
+        <div id="mapa"></div>
+
+    </main>
+
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
 
 </body>
 

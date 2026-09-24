@@ -5,7 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa da Cidade</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   
+    <link rel="stylesheet" 
+    href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <link rel="stylesheet" 
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
 </head>
 
 <body>
@@ -51,10 +58,8 @@
             </div>
 
             <div class="hero-mapa">
-
-                <div class="mapa-placeholder">
-                    <span>Mapa da cidade</span>
-                </div>
+                <div id="mapa-home"></div>
+            </div>
 
             </div>
 
@@ -96,11 +101,7 @@
             </div>
 
             <div class="mapa-preview">
-
-                <div class="mapa-placeholder">
-                    <span>Mapa da cidade</span>
-                </div>
-
+                <div id="mapa-home-preview"></div>
             </div>
 
             <div class="centralizar-botao">
@@ -132,5 +133,8 @@
     </div>
 
 </footer> 
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
 
 </html>
