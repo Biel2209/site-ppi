@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, session
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import sqlite3
 from datetime import datetime
@@ -6,6 +7,7 @@ import os
 
 app = Flask(__name__)
 
+app.secret_key = os.environ.get("SECRET_KEY", "chave-temporaria")
 
 @app.route("/")
 def inicio():
@@ -63,6 +65,94 @@ def inicio():
         solicitacoes_analise=solicitacoes_analise
     )
 
+@app.route("/cadastro", methods=["GET", "POST"])
+def cadastro():
+
+    if request.method == "GET":
+        return render_template("cadastro.html")
+
+    nome = request.form.get("nome")
+    email = request.form.get("email")
+    senha = request.form.get("senha")
+
+    if not nome or not email or not senha:
+        return "Preencha todos os campos."
+
+    senha_hash = generate_password_hash(senha)
+
+    data = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    cursor = conexao.cursor()
+
+    try:
+
+        cursor.execute("""
+            INSERT INTO usuarios
+            (nome, email, senha_hash, data_criacao)
+            VALUES (?, ?, ?, ?)
+        """, (
+            nome,
+            email,
+            senha_hash,
+            data
+        ))
+
+        conexao.commit()
+
+    except sqlite3.IntegrityError:
+
+        conexao.close()
+
+        return "Esse e-mail já está cadastrado."
+
+    conexao.close()
+
+    return redirect("/login")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "GET":
+        return render_template("login.html")
+
+    email = request.form.get("email")
+    senha = request.form.get("senha")
+
+    if not email or not senha:
+        return "Preencha todos os campos."
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    conexao.row_factory = sqlite3.Row
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM usuarios
+        WHERE email = ?
+    """, (email,))
+
+    usuario = cursor.fetchone()
+
+    conexao.close()
+
+    if usuario is None:
+        return "E-mail ou senha incorretos."
+
+    if not check_password_hash(usuario["senha_hash"], senha):
+        return "E-mail ou senha incorretos."
+
+    session["usuario_id"] = usuario["id"]
+    session["usuario_nome"] = usuario["nome"]
+
+    return redirect("/")
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect("/")
 
 @app.route("/mapa")
 def mapa():
@@ -87,6 +177,8 @@ def enviar_relato():
     latitude = request.form.get("latitude")
     longitude = request.form.get("longitude")
 
+    usuario_id = session.get("usuario_id")
+
     print("\n==============================")
     print("NOVO RELATO RECEBIDO")
     print("tipo:", tipo)
@@ -108,17 +200,18 @@ def enviar_relato():
     cursor = conexao.cursor()
 
     cursor.execute("""
-        INSERT INTO relatos
-        (tipo, descricao, latitude, longitude, status, data)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (
-        tipo,
-        descricao,
-        latitude,
-        longitude,
-        "Em análise",
-        data
-    ))
+    INSERT INTO relatos
+    (tipo, descricao, latitude, longitude, status, data, usuario_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+""", (
+    tipo,
+    descricao,
+    latitude,
+    longitude,
+    "Em análise",
+    data,
+    usuario_id
+))
 
     id_relato = cursor.lastrowid
 
@@ -173,6 +266,28 @@ def enviar_relato():
         "sucesso": True,
         "mensagem": "Obrigado por contribuir! Sua solicitação foi enviada e está em análise."
     })
+@app.route("/apagar-relato/<int:id>", methods=["POST"])
+def apagar_relato(id):
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    cursor = conexao.cursor()
+
+    # Apaga as fotos relacionadas
+    cursor.execute("""
+        DELETE FROM fotos
+        WHERE relato_id = ?
+    """, (id,))
+
+    # Apaga o relato
+    cursor.execute("""
+        DELETE FROM relatos
+        WHERE id = ?
+    """, (id,))
+
+    conexao.commit()
+    conexao.close()
+
+    return redirect("/solicitacoes")
 
 @app.route("/api/relatos")
 def api_relatos():
@@ -223,16 +338,29 @@ def api_relatos():
 @app.route("/solicitacoes")
 def solicitacoes():
 
+    usuario_id = session.get("usuario_id")
+
     conexao = sqlite3.connect("mapa_cidade.db")
     conexao.row_factory = sqlite3.Row
-
     cursor = conexao.cursor()
 
-    cursor.execute("""
-        SELECT *
-        FROM relatos
-        ORDER BY id DESC
-    """)
+    if usuario_id:
+
+        cursor.execute("""
+            SELECT *
+            FROM relatos
+            WHERE usuario_id = ?
+            ORDER BY id DESC
+        """, (usuario_id,))
+
+    else:
+
+        conexao.close()
+
+        return render_template(
+            "solicitacoes.html",
+            relatos=[]
+        )
 
     relatos = cursor.fetchall()
 
@@ -259,6 +387,65 @@ def solicitacoes():
         "solicitacoes.html",
         relatos=dados
     )
+
+@app.route("/cancelar-relato/<int:relato_id>", methods=["POST"])
+def cancelar_relato(relato_id):
+
+    usuario_id = session.get("usuario_id")
+
+    if not usuario_id:
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Você precisa estar logado."
+        }), 401
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    conexao.row_factory = sqlite3.Row
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM relatos
+        WHERE id = ?
+        AND usuario_id = ?
+    """, (relato_id, usuario_id))
+
+    relato = cursor.fetchone()
+
+    if relato is None:
+        conexao.close()
+
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Solicitação não encontrada."
+        }), 404
+
+    if relato["status"] != "Em análise":
+        conexao.close()
+
+        return jsonify({
+            "sucesso": False,
+            "mensagem": "Esta solicitação não pode mais ser cancelada."
+        }), 400
+
+    cursor.execute("""
+        UPDATE relatos
+        SET status = ?
+        WHERE id = ?
+        AND usuario_id = ?
+    """, (
+        "Cancelado",
+        relato_id,
+        usuario_id
+    ))
+
+    conexao.commit()
+    conexao.close()
+
+    return jsonify({
+        "sucesso": True,
+        "mensagem": "Solicitação cancelada com sucesso."
+    })
 
 
 if __name__ == "__main__":

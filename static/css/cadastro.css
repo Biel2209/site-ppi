@@ -1,0 +1,90 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #F3F5F7;
+    color: #263238;
+}
+
+.cadastro {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+}
+
+.cadastro-card {
+    width: 100%;
+    max-width: 430px;
+    background: #FFFFFF;
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.cadastro-card h1 {
+    margin: 0 0 10px;
+    font-size: 30px;
+}
+
+.cadastro-card > p {
+    margin: 0 0 30px;
+    color: #5F6B72;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+input {
+    padding: 12px;
+    border: 1px solid #D9DEE3;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #5581C9;
+}
+
+button {
+    margin-top: 20px;
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    background: #5581C9;
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #456FAF;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px !important;
+    margin-bottom: 0 !important;
+}
+
+.login-link a {
+    color: #5581C9;
+    text-decoration: none;
+    font-weight: bold;
+}

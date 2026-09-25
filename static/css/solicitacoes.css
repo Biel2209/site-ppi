@@ -117,18 +117,31 @@ main {
 
 .status {
     display: inline-block;
-
     padding: 6px 10px;
-
     border-radius: 20px;
-
-    background: #FFF4D6;
-    color: #A47D16;
-
     font-size: 13px;
     font-weight: bold;
 }
 
+.status-analise {
+    background: #FFF4D6;
+    color: #A47D16;
+}
+
+.status-andamento {
+    background: #E8EEF9;
+    color: #5581C9;
+}
+
+.status-concluida {
+    background: #E5F3EC;
+    color: #4CAF7D;
+}
+
+.status-cancelado {
+    background: #FDE8E7;
+    color: #D9534F;
+}
 .data {
     color: #5F6B72;
     font-size: 13px;
@@ -226,4 +239,95 @@ main {
     object-fit: cover;
     border-radius: 8px;
     border: 1px solid #D9DEE3;
+}
+
+.botao-apagar {
+    margin-top: 20px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #D9534F;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.botao-apagar:hover {
+    background: #B94440;
+}
+
+.botao-cancelar {
+    margin-top: 20px;
+    padding: 10px 16px;
+    border: 1px solid #D9534F;
+    border-radius: 8px;
+    background: #FFFFFF;
+    color: #D9534F;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-cancelar:hover {
+    background: #D9534F;
+    color: #FFFFFF;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.aberto {
+    display: flex;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 420px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-card h2 {
+    margin: 0 0 10px;
+}
+
+.modal-card p {
+    color: #5F6B72;
+}
+
+.modal-botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.botao-voltar,
+.botao-confirmar {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-voltar {
+    border: 1px solid #D9DEE3;
+    background: #FFFFFF;
+    color: #263238;
+}
+
+.botao-confirmar {
+    border: none;
+    background: #D9534F;
+    color: #FFFFFF;
 }

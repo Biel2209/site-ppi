@@ -182,3 +182,27 @@ main {
 .obra-info strong {
     color: #263238;
 }
+
+/* BOTÃO VER NO MAPA */
+
+.botao-mapa {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 16px;
+
+    background: #5581C9;
+    color: #FFFFFF;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.botao-mapa:hover {
+    background: #456FAF;
+}

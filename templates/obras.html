@@ -7,154 +7,269 @@
 
     <title>Obras - Mapa da Cidade</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/obras.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/obras.css') }}"
+    >
 </head>
 
 <body>
 
-    <header class="header">
+<header class="header">
 
-        <div class="logo">
-            MAPA DA CIDADE
-        </div>
+    <div class="logo">
+        MAPA DA CIDADE
+    </div>
 
-        <nav class="menu">
-            <a href="/">Início</a>
-            <a href="/mapa">Mapa</a>
-            <a href="/obras" class="ativo">Obras</a>
-            <a href="/relatar">Relatar problema</a>
-            <a href="/solicitacoes">Minhas solicitações</a>
-        </nav>
+    <nav class="menu">
 
-    </header>
+        <a href="/">Início</a>
+
+        <a href="/mapa">Mapa</a>
+
+        <a href="/obras">Obras</a>
+
+        <a href="/relatar">Relatar problema</a>
+
+        <a href="/solicitacoes">Minhas solicitações</a>
+
+        {% if session.get("usuario_id") %}
+
+            <span class="usuario">
+                Olá, {{ session.get("usuario_nome") }}
+            </span>
+
+            <a href="/logout">
+                Sair
+            </a>
+
+        {% else %}
+
+            <a href="/login">
+                Entrar
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</header>
 
 
-    <main>
+<main>
 
-        <section class="titulo">
+    <section class="titulo">
 
-            <h1>Obras públicas</h1>
+        <h1>
+            Obras públicas
+        </h1>
 
-            <p>
-                Acompanhe as obras e melhorias que estão acontecendo na cidade.
+        <p>
+            Acompanhe as obras e melhorias que estão acontecendo na cidade.
+        </p>
+
+    </section>
+
+
+    <section class="filtros">
+
+        <button class="filtro ativo">
+            Todas
+        </button>
+
+        <button class="filtro">
+            Em andamento
+        </button>
+
+        <button class="filtro">
+            Concluídas
+        </button>
+
+        <button class="filtro">
+            Em análise
+        </button>
+
+    </section>
+
+
+    <section class="lista-obras">
+
+
+        <div class="card-obra" data-status="andamento">
+
+            <div class="obra-topo">
+
+                <span class="status andamento">
+                    Em andamento
+                </span>
+
+            </div>
+
+            <h2>
+                Pavimentação da rua
+            </h2>
+
+            <p class="bairro">
+                Bairro: Centro
             </p>
 
-        </section>
+            <p>
+                Obra de pavimentação para melhorar as condições
+                de circulação e segurança da via.
+            </p>
+
+            <div class="obra-info">
+
+                <span>
+                    Previsão
+                </span>
+
+                <strong>
+                    Dezembro/2026
+                </strong>
+
+            </div>
+
+            <a href="/mapa" class="botao-mapa">
+                Ver no mapa
+            </a>
+
+        </div>
 
 
-        <section class="filtros">
+        <div class="card-obra" data-status="concluida">
 
-            <button class="filtro ativo">Todas</button>
-            <button class="filtro">Em andamento</button>
-            <button class="filtro">Concluídas</button>
-            <button class="filtro">Em análise</button>
+            <div class="obra-topo">
 
-        </section>
+                <span class="status concluida">
+                    Concluída
+                </span>
 
+            </div>
 
-        <section class="lista-obras">
+            <h2>
+                Reforma da praça
+            </h2>
 
-            <section class="lista-obras">
+            <p class="bairro">
+                Bairro: Alto
+            </p>
 
-                <div class="card-obra" data-status="andamento">
+            <p>
+                Reforma e revitalização do espaço público
+                para uso dos moradores.
+            </p>
 
-                    <div class="obra-topo">
-                        <span class="status andamento">Em andamento</span>
-                    </div>
+            <div class="obra-info">
 
-                    <h2>Pavimentação da rua</h2>
+                <span>
+                    Conclusão
+                </span>
 
-                    <p class="bairro">Bairro: Centro</p>
+                <strong>
+                    Setembro/2026
+                </strong>
 
-                    <p>
-                        Obra de pavimentação para melhorar as condições
-                        de circulação e segurança da via.
-                    </p>
+            </div>
 
-                    <div class="obra-info">
-                        <span>Previsão</span>
-                        <strong>Dezembro/2026</strong>
-                    </div>
+            <a href="/mapa" class="botao-mapa">
+                Ver no mapa
+            </a>
 
-                </div>
-
-
-                <div class="card-obra" data-status="concluida">
-
-                    <div class="obra-topo">
-                        <span class="status concluida">Concluída</span>
-                    </div>
-
-                    <h2>Reforma da praça</h2>
-
-                    <p class="bairro">Bairro: Alto</p>
-
-                    <p>
-                        Reforma e revitalização do espaço público
-                        para uso dos moradores.
-                    </p>
-
-                    <div class="obra-info">
-                        <span>Conclusão</span>
-                        <strong>Setembro/2026</strong>
-                    </div>
-
-                </div>
+        </div>
 
 
-                <div class="card-obra" data-status="analise">
+        <div class="card-obra" data-status="analise">
 
-                    <div class="obra-topo">
-                        <span class="status analise">Em análise</span>
-                    </div>
+            <div class="obra-topo">
 
-                    <h2>Melhoria na iluminação</h2>
+                <span class="status analise">
+                    Em análise
+                </span>
 
-                    <p class="bairro">Bairro: Nova Aquidauana</p>
+            </div>
 
-                    <p>
-                        Projeto para melhoria da iluminação pública
-                        em pontos identificados pelos moradores.
-                    </p>
+            <h2>
+                Melhoria na iluminação
+            </h2>
 
-                    <div class="obra-info">
-                        <span>Status</span>
-                        <strong>Em análise</strong>
-                    </div>
+            <p class="bairro">
+                Bairro: Nova Aquidauana
+            </p>
 
-                </div>
+            <p>
+                Projeto para melhoria da iluminação pública
+                em pontos identificados pelos moradores.
+            </p>
+
+            <div class="obra-info">
+
+                <span>
+                    Status
+                </span>
+
+                <strong>
+                    Em análise
+                </strong>
+
+            </div>
+
+            <a href="/mapa" class="botao-mapa">
+                Ver no mapa
+            </a>
+
+        </div>
 
 
-                <div class="card-obra" data-status="andamento">
+        <div class="card-obra" data-status="andamento">
 
-                    <div class="obra-topo">
-                        <span class="status andamento">Em andamento</span>
-                    </div>
+            <div class="obra-topo">
 
-                    <h2>Manutenção da via</h2>
+                <span class="status andamento">
+                    Em andamento
+                </span>
 
-                    <p class="bairro">Bairro: Guanandi</p>
+            </div>
 
-                    <p>
-                        Serviços de manutenção e recuperação
-                        da pavimentação da via.
-                    </p>
+            <h2>
+                Manutenção da via
+            </h2>
 
-                    <div class="obra-info">
-                        <span>Previsão</span>
-                        <strong>Novembro/2026</strong>
-                    </div>
+            <p class="bairro">
+                Bairro: Guanandi
+            </p>
 
-                </div>
+            <p>
+                Serviços de manutenção e recuperação
+                da pavimentação da via.
+            </p>
 
-            </section>
+            <div class="obra-info">
 
-        </section>
+                <span>
+                    Previsão
+                </span>
 
-    </main>
+                <strong>
+                    Novembro/2026
+                </strong>
 
-</body>
+            </div>
+
+            <a href="/mapa" class="botao-mapa">
+                Ver no mapa
+            </a>
+
+        </div>
+
+
+    </section>
+
+</main>
+
 
 <script src="{{ url_for('static', filename='js/obras.js') }}"></script>
+
+</body>
 
 </html>

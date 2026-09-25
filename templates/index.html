@@ -24,11 +24,35 @@
         </div>
 
         <nav class="menu">
-            <a href="/" class="ativo">Início</a>
+
+            <a href="/">Início</a>
+
             <a href="/mapa">Mapa</a>
+
             <a href="/obras">Obras</a>
+
             <a href="/relatar">Relatar problema</a>
+
             <a href="/solicitacoes">Minhas solicitações</a>
+
+            {% if session.get("usuario_id") %}
+
+                <span class="usuario">
+                    Olá, {{ session.get("usuario_nome") }}
+                </span>
+
+                <a href="/logout">
+                    Sair
+                </a>
+
+            {% else %}
+
+                <a href="/login">
+                    Entrar
+                </a>
+
+            {% endif %}
+
         </nav>
 
     </header>
