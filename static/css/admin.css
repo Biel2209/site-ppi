@@ -1,0 +1,326 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f3f5f7;
+    color: #263238;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.header {
+    background: #ffffff;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    border-bottom: 1px solid #e2e6ea;
+}
+
+.logo {
+    color: #5581c9;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.menu a {
+    color: #263238;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.menu a:hover {
+    color: #5581c9;
+}
+
+.menu .ativo {
+    color: #5581c9;
+    font-weight: bold;
+}
+
+.usuario {
+    font-size: 14px;
+    color: #68747c;
+}
+
+
+/* =========================
+   CONTEÚDO
+========================= */
+
+.conteudo {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 25px;
+}
+
+.titulo {
+    margin-bottom: 40px;
+}
+
+.subtitulo {
+    color: #5581c9;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.titulo h1 {
+    font-size: 36px;
+    margin: 8px 0;
+}
+
+.titulo p {
+    color: #68747c;
+    font-size: 16px;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.lista-obras {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-obra {
+    background: #ffffff;
+    border: 1px solid #e3e7eb;
+    border-radius: 14px;
+    padding: 25px;
+    transition: 0.2s;
+}
+
+.card-obra:hover {
+    border-color: #c8d5ea;
+    transform: translateY(-2px);
+}
+
+.obra-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.obra-id {
+    font-size: 11px;
+    color: #5581c9;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.card-obra h2 {
+    margin-top: 6px;
+    margin-bottom: 5px;
+    font-size: 21px;
+}
+
+.localizacao {
+    color: #68747c;
+    font-size: 14px;
+}
+
+.descricao {
+    margin-top: 20px;
+    color: #59656c;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status {
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.status.andamento {
+    background: #e8eef9;
+    color: #5581c9;
+}
+
+.status.concluida {
+    background: #e5f3ec;
+    color: #4caf7d;
+}
+
+.status.analise {
+    background: #fff4d6;
+    color: #a47d16;
+}
+
+
+/* =========================
+   FORMULÁRIO
+========================= */
+
+.linha {
+    height: 1px;
+    background: #edf0f2;
+    margin: 22px 0;
+}
+
+.form-status {
+    display: flex;
+    align-items: flex-end;
+    gap: 15px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex: 1;
+}
+
+.campo label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #45535b;
+}
+
+.campo select {
+    height: 44px;
+    padding: 0 12px;
+    border: 1px solid #d7dde2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #263238;
+    font-size: 14px;
+    outline: none;
+}
+
+.campo select:focus {
+    border-color: #5581c9;
+}
+
+.botao-salvar {
+    height: 44px;
+    padding: 0 22px;
+    border: none;
+    border-radius: 8px;
+    background: #5581c9;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao-salvar:hover {
+    background: #456eaf;
+}
+
+
+/* =========================
+   RODAPÉ
+========================= */
+
+.footer {
+    background: #ffffff;
+    border-top: 1px solid #e2e6ea;
+    margin-top: 30px;
+}
+
+.footer-conteudo {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 25px;
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.footer strong {
+    color: #5581c9;
+}
+
+.footer p {
+    color: #68747c;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.footer-direitos {
+    text-align: right;
+}
+
+
+/* =========================
+   CELULAR
+========================= */
+
+@media (max-width: 900px) {
+
+    .header {
+        height: auto;
+        padding: 20px;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .menu {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .conteudo {
+        padding: 40px 15px;
+    }
+
+    .titulo h1 {
+        font-size: 28px;
+    }
+
+    .obra-topo {
+        flex-direction: column;
+    }
+
+    .form-status {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .botao-salvar {
+        width: 100%;
+    }
+
+    .footer-conteudo {
+        flex-direction: column;
+    }
+
+    .footer-direitos {
+        text-align: left;
+    }
+
+}

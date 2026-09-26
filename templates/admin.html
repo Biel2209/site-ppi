@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administração - Mapa da Cidade</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="logo">
+            MAPA DA CIDADE
+        </div>
+
+        <nav class="menu">
+
+            <a href="/">Início</a>
+            <a href="/mapa">Mapa</a>
+            <a href="/obras">Obras</a>
+            <a href="/relatar">Relatar problema</a>
+            <a href="/solicitacoes">Minhas solicitações</a>
+
+            {% if session.get("usuario_id") %}
+
+                {% if session.get("usuario_perfil") == "admin" %}
+                    <a href="/admin" class="ativo">
+                        Administração
+                    </a>
+                {% endif %}
+
+                <span class="usuario">
+                    Olá, {{ session.get("usuario_nome") }}
+                </span>
+
+                <a href="/logout">
+                    Sair
+                </a>
+
+            {% else %}
+
+                <a href="/login">
+                    Entrar
+                </a>
+
+            {% endif %}
+
+        </nav>
+
+    </header>
+
+
+    <main class="conteudo">
+
+        <section class="titulo">
+
+            <span class="subtitulo">
+                PAINEL ADMINISTRATIVO
+            </span>
+
+            <h1>
+                Administração de obras
+            </h1>
+
+            <p>
+                Acompanhe as obras cadastradas e atualize o status de cada uma.
+            </p>
+
+        </section>
+
+
+        <section class="lista-obras">
+
+            {% for obra in obras %}
+
+                <article class="card-obra">
+
+                    <div class="obra-topo">
+
+                        <div>
+
+                            <span class="obra-id">
+                                OBRA #{{ obra["id"] }}
+                            </span>
+
+                            <h2>
+                                {{ obra["titulo"] }}
+                            </h2>
+
+                            <p class="localizacao">
+                                {{ obra["localizacao"] }}
+                            </p>
+
+                        </div>
+
+
+                        <span class="status
+                            {% if obra['status'] == 'Em andamento' %}
+                                andamento
+                            {% elif obra['status'] == 'Concluída' %}
+                                concluida
+                            {% elif obra['status'] == 'Em análise' %}
+                                analise
+                            {% endif %}
+                        ">
+
+                            {{ obra["status"] }}
+
+                        </span>
+
+                    </div>
+
+
+                    {% if obra["descricao"] %}
+
+                        <p class="descricao">
+                            {{ obra["descricao"] }}
+                        </p>
+
+                    {% endif %}
+
+
+                    <div class="linha"></div>
+
+
+                    <form
+                        method="POST"
+                        action="/alterar-status/{{ obra['id'] }}"
+                        class="form-status"
+                    >
+
+                        <div class="campo">
+
+                            <label for="status-{{ obra['id'] }}">
+                                Alterar status
+                            </label>
+
+                            <select
+                                name="status"
+                                id="status-{{ obra['id'] }}"
+                            >
+
+                                <option
+                                    value="Em análise"
+                                    {% if obra["status"] == "Em análise" %}selected{% endif %}
+                                >
+                                    Em análise
+                                </option>
+
+                                <option
+                                    value="Em andamento"
+                                    {% if obra["status"] == "Em andamento" %}selected{% endif %}
+                                >
+                                    Em andamento
+                                </option>
+
+                                <option
+                                    value="Concluída"
+                                    {% if obra["status"] == "Concluída" %}selected{% endif %}
+                                >
+                                    Concluída
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <button type="submit" class="botao-salvar">
+                            Salvar alteração
+                        </button>
+
+                    </form>
+
+                </article>
+
+            {% endfor %}
+
+        </section>
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div class="footer-conteudo">
+
+            <div>
+
+                <strong>MAPA DA CIDADE</strong>
+
+                <p>
+                    Informações sobre obras e infraestrutura pública.
+                </p>
+
+            </div>
+
+            <div class="footer-direitos">
+
+                <p>
+                    Projeto acadêmico
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

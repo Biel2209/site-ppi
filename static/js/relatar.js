@@ -39,6 +39,7 @@ function criarMarcador(cor) {
 
 }
 
+
 const vermelho = criarMarcador("#D9534F");
 const amarelo = criarMarcador("#E8B94A");
 const verde = criarMarcador("#4CAF7D");
@@ -74,14 +75,18 @@ fetch("/api/relatos")
 
                 icone = amarelo;
 
-            } else if (
+            }
+
+            else if (
                 relato.status === "Concluído" ||
                 relato.status === "Concluída"
             ) {
 
                 icone = verde;
 
-            } else {
+            }
+
+            else {
 
                 icone = vermelho;
 
@@ -108,11 +113,15 @@ fetch("/api/relatos")
 
             let imagens = "";
 
-            if (relato.fotos && relato.fotos.length > 0) {
+            if (
+                relato.fotos &&
+                relato.fotos.length > 0
+            ) {
 
                 relato.fotos.forEach(function (foto) {
 
                     imagens += `
+
                         <img
                             src="/static/uploads/${foto}"
                             alt="Foto do problema"
@@ -124,6 +133,7 @@ fetch("/api/relatos")
                                 display: block;
                             "
                         >
+
                     `;
 
                 });
@@ -137,7 +147,9 @@ fetch("/api/relatos")
 
             marcadorRelato.bindPopup(`
 
-                <strong>${relato.tipo}</strong>
+                <strong>
+                    ${relato.tipo}
+                </strong>
 
                 <br><br>
 
@@ -145,12 +157,18 @@ fetch("/api/relatos")
 
                 <br><br>
 
-                <strong>Status:</strong>
+                <strong>
+                    Status:
+                </strong>
+
                 ${relato.status}
 
                 <br>
 
-                <strong>Registrado em:</strong>
+                <strong>
+                    Registrado em:
+                </strong>
+
                 ${relato.data}
 
                 ${imagens}
@@ -172,12 +190,154 @@ fetch("/api/relatos")
 
 
 // =========================
+// OBRAS EXISTENTES
+// =========================
+
+fetch("/api/obras")
+
+    .then(function (resposta) {
+
+        return resposta.json();
+
+    })
+
+    .then(function (obras) {
+
+        obras.forEach(function (obra) {
+
+            let icone;
+
+
+            // =========================
+            // COR DA OBRA
+            // =========================
+
+            if (obra.status === "Em andamento") {
+
+                icone = azul;
+
+            }
+
+            else if (obra.status === "Concluída") {
+
+                icone = verde;
+
+            }
+
+            else if (obra.status === "Em análise") {
+
+                icone = amarelo;
+
+            }
+
+            else {
+
+                icone = azul;
+
+            }
+
+
+            // =========================
+            // MARCADOR DA OBRA
+            // =========================
+
+            const marcadorObra = L.marker(
+
+                [
+                    parseFloat(obra.latitude),
+                    parseFloat(obra.longitude)
+                ],
+
+                {
+                    icon: icone
+                }
+
+            ).addTo(mapaRelato);
+
+
+            // =========================
+            // POPUP DA OBRA
+            // =========================
+
+            let popup = `
+
+                <strong>
+                    ${obra.titulo}
+                </strong>
+
+                <br><br>
+
+                <strong>
+                    Local:
+                </strong>
+
+                ${obra.localizacao}
+
+                <br><br>
+
+                <strong>
+                    Status:
+                </strong>
+
+                ${obra.status}
+
+            `;
+
+
+            if (obra.previsao) {
+
+                popup += `
+
+                    <br>
+
+                    <strong>
+                        Previsão:
+                    </strong>
+
+                    ${obra.previsao}
+
+                `;
+
+            }
+
+
+            if (obra.descricao) {
+
+                popup += `
+
+                    <br><br>
+
+                    ${obra.descricao}
+
+                `;
+
+            }
+
+
+            marcadorObra.bindPopup(popup);
+
+        });
+
+    })
+
+    .catch(function (erro) {
+
+        console.error(
+            "Erro ao carregar as obras:",
+            erro
+        );
+
+    });
+
+
+// =========================
 // ESCOLHER LOCAL DO NOVO RELATO
 // =========================
 
 mapaRelato.on("click", function (evento) {
 
     const latitude = evento.latlng.lat;
+
     const longitude = evento.latlng.lng;
 
 
@@ -194,8 +354,13 @@ mapaRelato.on("click", function (evento) {
     marcador = L.marker(
         [latitude, longitude]
     )
+
         .addTo(mapaRelato)
-        .bindPopup("Local do problema")
+
+        .bindPopup(
+            "Local do problema"
+        )
+
         .openPopup();
 
 });
@@ -223,22 +388,35 @@ let tipoAtual = "";
 
 opcoesTipo.forEach(function (opcao) {
 
-    opcao.addEventListener("click", function () {
+    opcao.addEventListener(
+        "click",
+        function () {
 
-        opcoesTipo.forEach(function (item) {
+            opcoesTipo.forEach(
+                function (item) {
 
-            item.classList.remove("selecionado");
+                    item.classList.remove(
+                        "selecionado"
+                    );
 
-        });
+                }
+            );
 
-        opcao.classList.add("selecionado");
 
-        tipoAtual = opcao.dataset.valor;
+            opcao.classList.add(
+                "selecionado"
+            );
 
-        tipoSelecionado.textContent =
-            "Tipo selecionado: " + tipoAtual;
 
-    });
+            tipoAtual =
+                opcao.dataset.valor;
+
+
+            tipoSelecionado.textContent =
+                "Tipo selecionado: " + tipoAtual;
+
+        }
+    );
 
 });
 
@@ -247,31 +425,45 @@ opcoesTipo.forEach(function (opcao) {
 // BUSCAR TIPO
 // =========================
 
-buscaTipo.addEventListener("input", function () {
+buscaTipo.addEventListener(
+    "input",
+    function () {
 
-    const pesquisa =
-        buscaTipo.value.toLowerCase().trim();
-
-
-    opcoesTipo.forEach(function (opcao) {
-
-        const texto =
-            opcao.dataset.valor.toLowerCase();
+        const pesquisa =
+            buscaTipo.value
+                .toLowerCase()
+                .trim();
 
 
-        if (texto.includes(pesquisa)) {
+        opcoesTipo.forEach(
+            function (opcao) {
 
-            opcao.style.display = "block";
+                const texto =
+                    opcao.dataset.valor
+                        .toLowerCase();
 
-        } else {
 
-            opcao.style.display = "none";
+                if (
+                    texto.includes(pesquisa)
+                ) {
 
-        }
+                    opcao.style.display =
+                        "block";
 
-    });
+                }
 
-});
+                else {
+
+                    opcao.style.display =
+                        "none";
+
+                }
+
+            }
+        );
+
+    }
+);
 
 
 // =========================
@@ -287,39 +479,54 @@ const previewFotos =
 let fotosSelecionadas = [];
 
 
-campoFotos.addEventListener("change", function () {
+// =========================
+// SELECIONAR FOTOS
+// =========================
 
-    const novasFotos =
-        Array.from(campoFotos.files);
+campoFotos.addEventListener(
+    "change",
+    function () {
+
+        const novasFotos =
+            Array.from(campoFotos.files);
 
 
-    if (
-        fotosSelecionadas.length +
-        novasFotos.length > 3
-    ) {
+        if (
+            fotosSelecionadas.length +
+            novasFotos.length > 3
+        ) {
 
-        alert(
-            "Você pode adicionar no máximo 3 fotos."
+            alert(
+                "Você pode adicionar no máximo 3 fotos."
+            );
+
+            return;
+
+        }
+
+
+        novasFotos.forEach(
+            function (foto) {
+
+                fotosSelecionadas.push(
+                    foto
+                );
+
+            }
         );
 
-        return;
+
+        mostrarFotos();
+
+        campoFotos.value = "";
 
     }
+);
 
 
-    novasFotos.forEach(function (foto) {
-
-        fotosSelecionadas.push(foto);
-
-    });
-
-
-    mostrarFotos();
-
-    campoFotos.value = "";
-
-});
-
+// =========================
+// MOSTRAR FOTOS
+// =========================
 
 function mostrarFotos() {
 
@@ -330,7 +537,10 @@ function mostrarFotos() {
         function (foto, indice) {
 
             const container =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             container.classList.add(
                 "foto-preview"
@@ -338,14 +548,20 @@ function mostrarFotos() {
 
 
             const imagem =
-                document.createElement("img");
+                document.createElement(
+                    "img"
+                );
+
 
             imagem.src =
                 URL.createObjectURL(foto);
 
 
             const botao =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
+
 
             botao.type = "button";
 
@@ -361,17 +577,24 @@ function mostrarFotos() {
                         1
                     );
 
+
                     mostrarFotos();
 
                 }
             );
 
 
-            container.appendChild(imagem);
+            container.appendChild(
+                imagem
+            );
 
-            container.appendChild(botao);
+            container.appendChild(
+                botao
+            );
 
-            previewFotos.appendChild(container);
+            previewFotos.appendChild(
+                container
+            );
 
         }
     );
@@ -467,15 +690,18 @@ botaoEnviar.addEventListener(
             tipoAtual
         );
 
+
         dados.append(
             "descricao",
             descricao
         );
 
+
         dados.append(
             "latitude",
             posicao.lat
         );
+
 
         dados.append(
             "longitude",

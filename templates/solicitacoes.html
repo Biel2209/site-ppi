@@ -34,6 +34,12 @@
 
             {% if session.get("usuario_id") %}
 
+                {% if session.get("usuario_perfil") == "admin" %}
+                    <a href="/admin">
+                        Administração
+                    </a>
+                {% endif %}
+
                 <span class="usuario">
                     Olá, {{ session.get("usuario_nome") }}
                 </span>
@@ -53,7 +59,6 @@
         </nav>
 
     </header>
-
 
     <main>
 

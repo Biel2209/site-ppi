@@ -3,6 +3,7 @@
 // =========================
 
 const centro = [-20.4711, -55.7874];
+
 const zoom = 13;
 
 const urlMapa =
@@ -27,7 +28,6 @@ function criarMarcador(cor) {
         `,
 
         iconSize: [20, 20],
-
         iconAnchor: [10, 10]
 
     });
@@ -42,28 +42,62 @@ const azul = criarMarcador("#5581C9");
 
 
 // =========================
-// ESCOLHER COR
+// ESCOLHER COR DO RELATO
 // =========================
 
 function escolherIcone(relato) {
 
     if (relato.status === "Em análise") {
+
         return amarelo;
+
     }
 
     if (
         relato.status === "Concluído" ||
         relato.status === "Concluída"
     ) {
+
         return verde;
+
     }
 
     return vermelho;
+
 }
 
 
 // =========================
-// CRIAR POPUP
+// ESCOLHER COR DA OBRA
+// =========================
+
+function escolherIconeObra(obra) {
+
+    if (obra.status === "Em andamento") {
+
+        return azul;
+
+    }
+
+    if (obra.status === "Concluída") {
+
+        return verde;
+
+    }
+
+    if (obra.status === "Em análise") {
+
+        return amarelo;
+
+    }
+
+    return azul;
+
+}
+
+
+// =========================
+// CRIAR POPUP DO RELATO
 // =========================
 
 function criarPopup(relato) {
@@ -75,6 +109,7 @@ function criarPopup(relato) {
         relato.fotos.forEach(function (foto) {
 
             fotos += `
+
                 <img
                     src="/static/uploads/${foto}"
                     alt="Foto do problema"
@@ -86,6 +121,7 @@ function criarPopup(relato) {
                         display: block;
                     "
                 >
+
             `;
 
         });
@@ -95,7 +131,9 @@ function criarPopup(relato) {
 
     return `
 
-        <strong>${relato.tipo}</strong>
+        <strong>
+            ${relato.tipo}
+        </strong>
 
         <br><br>
 
@@ -103,17 +141,90 @@ function criarPopup(relato) {
 
         <br><br>
 
-        <strong>Status:</strong>
+        <strong>
+            Status:
+        </strong>
+
         ${relato.status}
 
         <br>
 
-        <strong>Registrado em:</strong>
+        <strong>
+            Registrado em:
+        </strong>
+
         ${relato.data}
 
         ${fotos}
 
     `;
+
+}
+
+
+// =========================
+// CRIAR POPUP DA OBRA
+// =========================
+
+function criarPopupObra(obra) {
+
+    let popup = `
+
+        <strong>
+            ${obra.titulo}
+        </strong>
+
+        <br><br>
+
+        <strong>
+            Local:
+        </strong>
+
+        ${obra.localizacao}
+
+        <br><br>
+
+        <strong>
+            Status:
+        </strong>
+
+        ${obra.status}
+
+    `;
+
+
+    if (obra.previsao) {
+
+        popup += `
+
+            <br>
+
+            <strong>
+                Previsão:
+            </strong>
+
+            ${obra.previsao}
+
+        `;
+
+    }
+
+
+    if (obra.descricao) {
+
+        popup += `
+
+            <br><br>
+
+            ${obra.descricao}
+
+        `;
+
+    }
+
+
+    return popup;
+
 }
 
 
@@ -201,6 +312,89 @@ function carregarRelatos(mapa) {
 
 
 // =========================
+// CARREGAR OBRAS
+// =========================
+
+function carregarObras(mapa) {
+
+    fetch("/api/obras")
+
+        .then(function (resposta) {
+
+            if (!resposta.ok) {
+
+                throw new Error(
+                    "Erro HTTP: " + resposta.status
+                );
+
+            }
+
+            return resposta.json();
+
+        })
+
+        .then(function (obras) {
+
+            console.log(
+                "Obras carregadas no mapa:",
+                obras
+            );
+
+
+            obras.forEach(function (obra) {
+
+                const latitude =
+                    parseFloat(obra.latitude);
+
+                const longitude =
+                    parseFloat(obra.longitude);
+
+
+                if (
+                    isNaN(latitude) ||
+                    isNaN(longitude)
+                ) {
+
+                    return;
+
+                }
+
+
+                const marcador = L.marker(
+
+                    [
+                        latitude,
+                        longitude
+                    ],
+
+                    {
+                        icon: escolherIconeObra(obra)
+                    }
+
+                ).addTo(mapa);
+
+
+                marcador.bindPopup(
+                    criarPopupObra(obra)
+                );
+
+            });
+
+        })
+
+        .catch(function (erro) {
+
+            console.error(
+                "Erro ao carregar obras:",
+                erro
+            );
+
+        });
+
+}
+
+
+// =========================
 // MAPA DO HERO
 // =========================
 
@@ -213,6 +407,7 @@ L.tileLayer(
     urlMapa,
 
     {
+
         attribution:
             '&copy; OpenStreetMap contributors &copy; CARTO',
 
@@ -223,8 +418,14 @@ L.tileLayer(
 ).addTo(mapaHome);
 
 
-// Carregar relatos reais
+// Carregar relatos
+
 carregarRelatos(mapaHome);
+
+
+// Carregar obras
+
+carregarObras(mapaHome);
 
 
 // =========================
@@ -241,6 +442,7 @@ L.tileLayer(
     urlMapa,
 
     {
+
         attribution:
             '&copy; OpenStreetMap contributors &copy; CARTO',
 
@@ -251,5 +453,11 @@ L.tileLayer(
 ).addTo(mapaHomePreview);
 
 
-// Carregar relatos reais
+// Carregar relatos
+
 carregarRelatos(mapaHomePreview);
+
+
+// Carregar obras
+
+carregarObras(mapaHomePreview);

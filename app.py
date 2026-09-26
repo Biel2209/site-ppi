@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 app.secret_key = os.environ.get("SECRET_KEY", "chave-temporaria")
 
+
 @app.route("/")
 def inicio():
 
@@ -24,7 +25,6 @@ def inicio():
 
     obras_andamento = cursor.fetchone()[0]
 
-
     # Quantidade de obras concluídas
     cursor.execute("""
         SELECT COUNT(*)
@@ -34,7 +34,6 @@ def inicio():
 
     obras_concluidas = cursor.fetchone()[0]
 
-
     # Quantidade total de problemas registrados
     cursor.execute("""
         SELECT COUNT(*)
@@ -42,7 +41,6 @@ def inicio():
     """)
 
     problemas_registrados = cursor.fetchone()[0]
-
 
     # Quantidade de solicitações em análise
     cursor.execute("""
@@ -53,9 +51,7 @@ def inicio():
 
     solicitacoes_analise = cursor.fetchone()[0]
 
-
     conexao.close()
-
 
     return render_template(
         "index.html",
@@ -64,6 +60,7 @@ def inicio():
         problemas_registrados=problemas_registrados,
         solicitacoes_analise=solicitacoes_analise
     )
+
 
 @app.route("/cadastro", methods=["GET", "POST"])
 def cadastro():
@@ -110,6 +107,7 @@ def cadastro():
 
     return redirect("/login")
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
@@ -144,8 +142,10 @@ def login():
 
     session["usuario_id"] = usuario["id"]
     session["usuario_nome"] = usuario["nome"]
+    session["usuario_perfil"] = usuario["perfil"]
 
     return redirect("/")
+
 
 @app.route("/logout")
 def logout():
@@ -154,18 +154,39 @@ def logout():
 
     return redirect("/")
 
+
 @app.route("/mapa")
 def mapa():
+
     return render_template("mapa.html")
 
 
 @app.route("/obras")
 def obras():
-    return render_template("obras.html")
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    conexao.row_factory = sqlite3.Row
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM obras
+        ORDER BY id DESC
+    """)
+
+    obras = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "obras.html",
+        obras=obras
+    )
 
 
 @app.route("/relatar")
 def relatar():
+
     return render_template("relatar.html")
 
 
@@ -189,6 +210,7 @@ def enviar_relato():
     print("==============================\n")
 
     if not tipo or not descricao or not latitude or not longitude:
+
         return jsonify({
             "sucesso": False,
             "mensagem": "Dados incompletos."
@@ -200,25 +222,25 @@ def enviar_relato():
     cursor = conexao.cursor()
 
     cursor.execute("""
-    INSERT INTO relatos
-    (tipo, descricao, latitude, longitude, status, data, usuario_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-""", (
-    tipo,
-    descricao,
-    latitude,
-    longitude,
-    "Em análise",
-    data,
-    usuario_id
-))
+        INSERT INTO relatos
+        (tipo, descricao, latitude, longitude, status, data, usuario_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        tipo,
+        descricao,
+        latitude,
+        longitude,
+        "Em análise",
+        data,
+        usuario_id
+    ))
 
     id_relato = cursor.lastrowid
 
     conexao.commit()
     conexao.close()
 
-      # =========================
+    # =========================
     # SALVAR FOTOS
     # =========================
 
@@ -255,17 +277,22 @@ def enviar_relato():
                 id_relato,
                 nome_arquivo
             ))
-            
 
             conexao.commit()
-            print("FOTO REGISTRADA NO BANCO:", nome_arquivo)
-            conexao.close()
 
+            print(
+                "FOTO REGISTRADA NO BANCO:",
+                nome_arquivo
+            )
+
+            conexao.close()
 
     return jsonify({
         "sucesso": True,
         "mensagem": "Obrigado por contribuir! Sua solicitação foi enviada e está em análise."
     })
+
+
 @app.route("/apagar-relato/<int:id>", methods=["POST"])
 def apagar_relato(id):
 
@@ -288,6 +315,7 @@ def apagar_relato(id):
     conexao.close()
 
     return redirect("/solicitacoes")
+
 
 @app.route("/api/relatos")
 def api_relatos():
@@ -334,6 +362,7 @@ def api_relatos():
     conexao.close()
 
     return jsonify(dados)
+
 
 @app.route("/solicitacoes")
 def solicitacoes():
@@ -388,12 +417,14 @@ def solicitacoes():
         relatos=dados
     )
 
+
 @app.route("/cancelar-relato/<int:relato_id>", methods=["POST"])
 def cancelar_relato(relato_id):
 
     usuario_id = session.get("usuario_id")
 
     if not usuario_id:
+
         return jsonify({
             "sucesso": False,
             "mensagem": "Você precisa estar logado."
@@ -408,11 +439,15 @@ def cancelar_relato(relato_id):
         FROM relatos
         WHERE id = ?
         AND usuario_id = ?
-    """, (relato_id, usuario_id))
+    """, (
+        relato_id,
+        usuario_id
+    ))
 
     relato = cursor.fetchone()
 
     if relato is None:
+
         conexao.close()
 
         return jsonify({
@@ -421,6 +456,7 @@ def cancelar_relato(relato_id):
         }), 404
 
     if relato["status"] != "Em análise":
+
         conexao.close()
 
         return jsonify({
@@ -447,6 +483,101 @@ def cancelar_relato(relato_id):
         "mensagem": "Solicitação cancelada com sucesso."
     })
 
+
+# ==========================================
+# ALTERAR STATUS DE UMA OBRA
+# ==========================================
+
+@app.route("/alterar-status/<int:obra_id>", methods=["POST"])
+def alterar_status(obra_id):
+
+    if session.get("usuario_perfil") != "admin":
+        return redirect("/")
+
+    novo_status = request.form.get("status")
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE obras
+        SET status = ?
+        WHERE id = ?
+    """, (
+        novo_status,
+        obra_id
+    ))
+
+    conexao.commit()
+    conexao.close()
+
+    return redirect("/admin")
+
+
+# ==========================================
+# PAINEL ADMINISTRATIVO
+# ==========================================
+
+@app.route("/admin")
+def admin():
+
+    if session.get("usuario_perfil") != "admin":
+        return redirect("/")
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    conexao.row_factory = sqlite3.Row
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM obras
+        ORDER BY id DESC
+    """)
+
+    obras = cursor.fetchall()
+
+    conexao.close()
+
+    return render_template(
+        "admin.html",
+        obras=obras
+    )
+
+@app.route("/api/obras")
+def api_obras():
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    conexao.row_factory = sqlite3.Row
+
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        SELECT id, titulo, localizacao, status, previsao,
+               descricao, latitude, longitude
+        FROM obras
+        ORDER BY id DESC
+    """)
+
+    obras = cursor.fetchall()
+
+    dados = []
+
+    for obra in obras:
+
+        dados.append({
+            "id": obra["id"],
+            "titulo": obra["titulo"],
+            "localizacao": obra["localizacao"],
+            "status": obra["status"],
+            "previsao": obra["previsao"],
+            "descricao": obra["descricao"],
+            "latitude": obra["latitude"],
+            "longitude": obra["longitude"]
+        })
+
+    conexao.close()
+
+    return jsonify(dados)
 
 if __name__ == "__main__":
     app.run(debug=True)

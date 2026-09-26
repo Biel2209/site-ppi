@@ -15,45 +15,51 @@
 
 <body>
 
-<header class="header">
+    <header class="header">
 
-    <div class="logo">
-        MAPA DA CIDADE
-    </div>
+        <div class="logo">
+            MAPA DA CIDADE
+        </div>
 
-    <nav class="menu">
+        <nav class="menu">
 
-        <a href="/">Início</a>
+            <a href="/">Início</a>
 
-        <a href="/mapa">Mapa</a>
+            <a href="/mapa">Mapa</a>
 
-        <a href="/obras">Obras</a>
+            <a href="/obras">Obras</a>
 
-        <a href="/relatar">Relatar problema</a>
+            <a href="/relatar">Relatar problema</a>
 
-        <a href="/solicitacoes">Minhas solicitações</a>
+            <a href="/solicitacoes">Minhas solicitações</a>
 
-        {% if session.get("usuario_id") %}
+            {% if session.get("usuario_id") %}
 
-            <span class="usuario">
-                Olá, {{ session.get("usuario_nome") }}
-            </span>
+                {% if session.get("usuario_perfil") == "admin" %}
+                    <a href="/admin">
+                        Administração
+                    </a>
+                {% endif %}
 
-            <a href="/logout">
-                Sair
-            </a>
+                <span class="usuario">
+                    Olá, {{ session.get("usuario_nome") }}
+                </span>
 
-        {% else %}
+                <a href="/logout">
+                    Sair
+                </a>
 
-            <a href="/login">
-                Entrar
-            </a>
+            {% else %}
 
-        {% endif %}
+                <a href="/login">
+                    Entrar
+                </a>
 
-    </nav>
+            {% endif %}
 
-</header>
+        </nav>
+
+    </header>
 
 
 <main>
@@ -95,172 +101,58 @@
     <section class="lista-obras">
 
 
-        <div class="card-obra" data-status="andamento">
+        {% for obra in obras %}
 
-            <div class="obra-topo">
+    <div
+        class="card-obra"
+        data-status="
+            {% if obra['status'] == 'Em andamento' %}
+                andamento
+            {% elif obra['status'] == 'Concluída' %}
+                concluida
+            {% elif obra['status'] == 'Em análise' %}
+                analise
+            {% endif %}
+        "
+    >
 
-                <span class="status andamento">
-                    Em andamento
-                </span>
+        <span class="status
+            {% if obra['status'] == 'Em andamento' %}
+                status-andamento
+            {% elif obra['status'] == 'Concluída' %}
+                status-concluida
+            {% elif obra['status'] == 'Em análise' %}
+                status-analise
+            {% endif %}
+        ">
+            {{ obra['status'] }}
+        </span>
 
-            </div>
+        <h2>{{ obra['titulo'] }}</h2>
 
-            <h2>
-                Pavimentação da rua
-            </h2>
+        <p class="localizacao">
+            {{ obra['localizacao'] }}
+        </p>
 
-            <p class="bairro">
-                Bairro: Centro
+        {% if obra['descricao'] %}
+            <p class="descricao">
+                {{ obra['descricao'] }}
             </p>
+        {% endif %}
 
-            <p>
-                Obra de pavimentação para melhorar as condições
-                de circulação e segurança da via.
+        {% if obra['previsao'] %}
+            <p class="previsao">
+                Previsão: {{ obra['previsao'] }}
             </p>
+        {% endif %}
 
-            <div class="obra-info">
+        <a href="/mapa" class="botao-mapa">
+            Ver no mapa
+        </a>
 
-                <span>
-                    Previsão
-                </span>
+    </div>
 
-                <strong>
-                    Dezembro/2026
-                </strong>
-
-            </div>
-
-            <a href="/mapa" class="botao-mapa">
-                Ver no mapa
-            </a>
-
-        </div>
-
-
-        <div class="card-obra" data-status="concluida">
-
-            <div class="obra-topo">
-
-                <span class="status concluida">
-                    Concluída
-                </span>
-
-            </div>
-
-            <h2>
-                Reforma da praça
-            </h2>
-
-            <p class="bairro">
-                Bairro: Alto
-            </p>
-
-            <p>
-                Reforma e revitalização do espaço público
-                para uso dos moradores.
-            </p>
-
-            <div class="obra-info">
-
-                <span>
-                    Conclusão
-                </span>
-
-                <strong>
-                    Setembro/2026
-                </strong>
-
-            </div>
-
-            <a href="/mapa" class="botao-mapa">
-                Ver no mapa
-            </a>
-
-        </div>
-
-
-        <div class="card-obra" data-status="analise">
-
-            <div class="obra-topo">
-
-                <span class="status analise">
-                    Em análise
-                </span>
-
-            </div>
-
-            <h2>
-                Melhoria na iluminação
-            </h2>
-
-            <p class="bairro">
-                Bairro: Nova Aquidauana
-            </p>
-
-            <p>
-                Projeto para melhoria da iluminação pública
-                em pontos identificados pelos moradores.
-            </p>
-
-            <div class="obra-info">
-
-                <span>
-                    Status
-                </span>
-
-                <strong>
-                    Em análise
-                </strong>
-
-            </div>
-
-            <a href="/mapa" class="botao-mapa">
-                Ver no mapa
-            </a>
-
-        </div>
-
-
-        <div class="card-obra" data-status="andamento">
-
-            <div class="obra-topo">
-
-                <span class="status andamento">
-                    Em andamento
-                </span>
-
-            </div>
-
-            <h2>
-                Manutenção da via
-            </h2>
-
-            <p class="bairro">
-                Bairro: Guanandi
-            </p>
-
-            <p>
-                Serviços de manutenção e recuperação
-                da pavimentação da via.
-            </p>
-
-            <div class="obra-info">
-
-                <span>
-                    Previsão
-                </span>
-
-                <strong>
-                    Novembro/2026
-                </strong>
-
-            </div>
-
-            <a href="/mapa" class="botao-mapa">
-                Ver no mapa
-            </a>
-
-        </div>
+{% endfor %}
 
 
     </section>

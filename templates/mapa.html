@@ -22,7 +22,7 @@
             MAPA DA CIDADE
         </div>
 
-       <nav class="menu">
+        <nav class="menu">
 
             <a href="/">Início</a>
 
@@ -35,6 +35,12 @@
             <a href="/solicitacoes">Minhas solicitações</a>
 
             {% if session.get("usuario_id") %}
+
+                {% if session.get("usuario_perfil") == "admin" %}
+                    <a href="/admin">
+                        Administração
+                    </a>
+                {% endif %}
 
                 <span class="usuario">
                     Olá, {{ session.get("usuario_nome") }}
@@ -53,7 +59,7 @@
             {% endif %}
 
         </nav>
-    
+
     </header>
 
 
