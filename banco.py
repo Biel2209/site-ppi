@@ -6,6 +6,10 @@ def criar_banco():
     conexao = sqlite3.connect("mapa_cidade.db")
     cursor = conexao.cursor()
 
+    # =========================
+    # TABELA DE RELATOS
+    # =========================
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS relatos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,6 +22,45 @@ def criar_banco():
         )
     """)
 
+    # Verifica as colunas atuais dos relatos
+    cursor.execute("""
+        PRAGMA table_info(relatos)
+    """)
+
+    colunas_relatos = cursor.fetchall()
+    nomes_colunas_relatos = []
+
+    for coluna in colunas_relatos:
+        nomes_colunas_relatos.append(coluna[1])
+
+    # Adiciona usuario_id se ainda não existir
+    if "usuario_id" not in nomes_colunas_relatos:
+
+        cursor.execute("""
+            ALTER TABLE relatos
+            ADD COLUMN usuario_id INTEGER
+        """)
+
+    # Adiciona rua se ainda não existir
+    if "rua" not in nomes_colunas_relatos:
+
+        cursor.execute("""
+            ALTER TABLE relatos
+            ADD COLUMN rua TEXT
+        """)
+
+    # Adiciona bairro se ainda não existir
+    if "bairro" not in nomes_colunas_relatos:
+
+        cursor.execute("""
+            ALTER TABLE relatos
+            ADD COLUMN bairro TEXT
+        """)
+
+    # =========================
+    # TABELA DE FOTOS
+    # =========================
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS fotos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,18 +69,23 @@ def criar_banco():
             FOREIGN KEY (relato_id) REFERENCES relatos(id)
         )
     """)
-#users
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        senha_hash TEXT NOT NULL,
-        data_criacao TEXT NOT NULL,
-        perfil TEXT NOT NULL DEFAULT 'usuario'
-    )
-""")
 
+    # =========================
+    # TABELA DE USUÁRIOS
+    # =========================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            senha_hash TEXT NOT NULL,
+            data_criacao TEXT NOT NULL,
+            perfil TEXT NOT NULL DEFAULT 'usuario'
+        )
+    """)
+
+    # Verifica as colunas dos usuários
     cursor.execute("""
         PRAGMA table_info(usuarios)
     """)
@@ -48,32 +96,17 @@ def criar_banco():
     for coluna in colunas_usuarios:
         nomes_colunas_usuarios.append(coluna[1])
 
+    # Adiciona perfil se ainda não existir
     if "perfil" not in nomes_colunas_usuarios:
 
         cursor.execute("""
             ALTER TABLE usuarios
             ADD COLUMN perfil TEXT NOT NULL DEFAULT 'usuario'
         """)
-    
-    cursor.execute("""
-        PRAGMA table_info(relatos)
-    """)
 
-    colunas = cursor.fetchall()
-
-    nomes_colunas = []
-
-    for coluna in colunas:
-        nomes_colunas.append(coluna[1])
-
-    if "usuario_id" not in nomes_colunas:
-
-        cursor.execute("""
-            ALTER TABLE relatos
-            ADD COLUMN usuario_id INTEGER
-        """)
-
+    # =========================
     # TABELA DE OBRAS
+    # =========================
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS obras (
@@ -88,7 +121,36 @@ def criar_banco():
         )
     """)
 
-    # VERIFICA SE JÁ EXISTEM OBRAS
+    # Verifica as colunas atuais das obras
+    cursor.execute("""
+        PRAGMA table_info(obras)
+    """)
+
+    colunas_obras = cursor.fetchall()
+    nomes_colunas_obras = []
+
+    for coluna in colunas_obras:
+        nomes_colunas_obras.append(coluna[1])
+
+    # Adiciona rua se ainda não existir
+    if "rua" not in nomes_colunas_obras:
+
+        cursor.execute("""
+            ALTER TABLE obras
+            ADD COLUMN rua TEXT
+        """)
+
+    # Adiciona bairro se ainda não existir
+    if "bairro" not in nomes_colunas_obras:
+
+        cursor.execute("""
+            ALTER TABLE obras
+            ADD COLUMN bairro TEXT
+        """)
+
+    # =========================
+    # OBRAS INICIAIS
+    # =========================
 
     cursor.execute("""
         SELECT COUNT(*)
@@ -97,16 +159,26 @@ def criar_banco():
 
     quantidade_obras = cursor.fetchone()[0]
 
-    # CADASTRA AS OBRAS APENAS SE O BANCO ESTIVER VAZIO
-
     if quantidade_obras == 0:
 
         cursor.execute("""
             INSERT INTO obras
-            (titulo, localizacao, status, previsao, descricao, latitude, longitude)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (
+                titulo,
+                localizacao,
+                rua,
+                bairro,
+                status,
+                previsao,
+                descricao,
+                latitude,
+                longitude
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             "Pavimentação da rua",
+            "Centro",
+            "Rua dos Estudantes",
             "Centro",
             "Em andamento",
             "Dezembro/2026",
@@ -117,10 +189,22 @@ def criar_banco():
 
         cursor.execute("""
             INSERT INTO obras
-            (titulo, localizacao, status, previsao, descricao, latitude, longitude)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (
+                titulo,
+                localizacao,
+                rua,
+                bairro,
+                status,
+                previsao,
+                descricao,
+                latitude,
+                longitude
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             "Reforma da praça",
+            "Alto",
+            "Rua da Praça",
             "Alto",
             "Concluída",
             "Setembro/2026",
@@ -131,10 +215,22 @@ def criar_banco():
 
         cursor.execute("""
             INSERT INTO obras
-            (titulo, localizacao, status, previsao, descricao, latitude, longitude)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (
+                titulo,
+                localizacao,
+                rua,
+                bairro,
+                status,
+                previsao,
+                descricao,
+                latitude,
+                longitude
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             "Melhoria na iluminação",
+            "Nova Aquidauana",
+            "Rua Principal",
             "Nova Aquidauana",
             "Em análise",
             None,
@@ -145,10 +241,22 @@ def criar_banco():
 
         cursor.execute("""
             INSERT INTO obras
-            (titulo, localizacao, status, previsao, descricao, latitude, longitude)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            (
+                titulo,
+                localizacao,
+                rua,
+                bairro,
+                status,
+                previsao,
+                descricao,
+                latitude,
+                longitude
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             "Manutenção da via",
+            "Guanandi",
+            "Rua Guanandi",
             "Guanandi",
             "Em andamento",
             "Novembro/2026",
@@ -162,6 +270,11 @@ def criar_banco():
 
 
 criar_banco()
+
+
+# =========================
+# DEFINE O ADMINISTRADOR
+# =========================
 
 email_admin = "adm@exemplo.com"
 

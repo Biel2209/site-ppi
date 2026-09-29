@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="pt-br">
 
 <head>
 
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Administração - Mapa da Cidade</title>
@@ -25,18 +27,34 @@
 
         <nav class="menu">
 
-            <a href="/">Início</a>
-            <a href="/mapa">Mapa</a>
-            <a href="/obras">Obras</a>
-            <a href="/relatar">Relatar problema</a>
-            <a href="/solicitacoes">Minhas solicitações</a>
+            <a href="/">
+                Início
+            </a>
+
+            <a href="/mapa">
+                Mapa
+            </a>
+
+            <a href="/obras">
+                Obras
+            </a>
+
+            <a href="/relatar">
+                Relatar problema
+            </a>
+
+            <a href="/solicitacoes">
+                Minhas solicitações
+            </a>
 
             {% if session.get("usuario_id") %}
 
                 {% if session.get("usuario_perfil") == "admin" %}
+
                     <a href="/admin" class="ativo">
                         Administração
                     </a>
+
                 {% endif %}
 
                 <span class="usuario">
@@ -69,21 +87,136 @@
             </span>
 
             <h1>
-                Administração de obras
+                Administração de obras e solicitações
             </h1>
 
             <p>
-                Acompanhe as obras cadastradas e atualize o status de cada uma.
+                Acompanhe as obras cadastradas e os problemas relatados pelos moradores.
             </p>
 
         </section>
 
+    <!-- ==========================================
+        FILTROS ADMINISTRATIVOS
+    ========================================== -->
+
+    <div class="filtros-admin">
+
+        <div class="filtros-admin-topo">
+
+            <div>
+                <strong>Filtrar conteúdo</strong>
+
+                <span>
+                    Encontre obras e solicitações rapidamente.
+                </span>
+            </div>
+
+            <button
+                type="button"
+                id="botao-filtros"
+                class="botao-filtros"
+            >
+                ☷ Filtrar
+            </button>
+
+        </div>
+
+
+        <div
+            id="opcoes-filtros"
+            class="opcoes-filtros"
+        >
+
+            <div class="filtro-campo">
+
+                <label for="filtro-tipo">
+                    Tipo
+                </label>
+
+                <select id="filtro-tipo">
+
+                    <option value="todos">
+                        Todos
+                    </option>
+
+                    <option value="obra">
+                        🏗 Obras
+                    </option>
+
+                    <option value="solicitacao">
+                        📢 Solicitações
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filtro-campo">
+
+                <label for="filtro-status">
+                    Status
+                </label>
+
+                <select id="filtro-status">
+
+                    <option value="todos">
+                        Todos
+                    </option>
+
+                    <option value="Em análise">
+                        Em análise
+                    </option>
+
+                    <option value="Em andamento">
+                        Em andamento
+                    </option>
+
+                    <option value="Concluída">
+                        Concluída
+                    </option>
+
+                    <option value="Cancelado">
+                        Cancelado
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="limpar-filtros"
+                class="botao-limpar-filtros"
+            >
+                Limpar filtros
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+        <!-- ==========================================
+             OBRAS
+        ========================================== -->
 
         <section class="lista-obras">
 
+            <h2>
+                Obras cadastradas
+            </h2>
+
             {% for obra in obras %}
 
-                <article class="card-obra">
+                <article
+                    class="card-obra item-admin"
+                    data-tipo="obra"
+                    data-status="{{ obra['status'] }}"
+                >
 
                     <div class="obra-topo">
 
@@ -176,7 +309,10 @@
                         </div>
 
 
-                        <button type="submit" class="botao-salvar">
+                        <button
+                            type="submit"
+                            class="botao-salvar"
+                        >
                             Salvar alteração
                         </button>
 
@@ -185,6 +321,186 @@
                 </article>
 
             {% endfor %}
+
+        </section>
+
+
+        <!-- ==========================================
+             SOLICITAÇÕES DOS MORADORES
+        ========================================== -->
+
+        <section class="lista-obras">
+
+            <h2>
+                Solicitações dos moradores
+            </h2>
+
+            {% if relatos %}
+
+                {% for relato in relatos %}
+
+                    <article
+                        class="card-obra item-admin"
+                        data-tipo="solicitacao"
+                        data-status="{{ relato['status'] }}"
+                    >
+
+                        <div class="obra-topo">
+
+                            <div>
+
+                                <span class="obra-id">
+                                    SOLICITAÇÃO #{{ relato["id"] }}
+                                </span>
+
+                                <h2>
+                                    {{ relato["tipo"] }}
+                                </h2>
+
+                            </div>
+
+
+                            <span class="status
+                                {% if relato['status'] == 'Em andamento' %}
+                                    andamento
+                                {% elif relato['status'] == 'Concluída' %}
+                                    concluida
+                                {% elif relato['status'] == 'Em análise' %}
+                                    analise
+                                {% elif relato['status'] == 'Cancelado' %}
+                                    cancelado
+                                {% endif %}
+                            ">
+
+                                {{ relato["status"] }}
+
+                            </span>
+
+                        </div>
+
+
+                        <p class="localizacao">
+
+                            📍
+                            {{ relato["rua"] or "Rua não informada" }}
+
+                            <br>
+
+                            🏘️
+                            {{ relato["bairro"] or "Bairro não informado" }}
+
+                        </p>
+
+
+                        {% if relato["descricao"] %}
+
+                            <p class="descricao">
+
+                                {{ relato["descricao"] }}
+
+                            </p>
+
+                        {% endif %}
+
+
+                        {% set fotos_relato = fotos_por_relato.get(relato["id"], []) %}
+                        {% if fotos_relato %}
+                            <div class="fotos-relato">
+                                {% for foto in fotos_relato %}
+                                    <img
+                                        src="{{ url_for('static', filename='uploads/' ~ foto['arquivo']) }}"
+                                        alt="Foto da solicitação {{ relato['id'] }}"
+                                        style="width: 100%; max-width: 220px; margin: 6px 6px 6px 0; border-radius: 8px;"
+                                    >
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+
+                        <p class="descricao">
+
+                            <strong>
+                                Registrado em:
+                            </strong>
+
+                            {{ relato["data"] }}
+
+                        </p>
+
+
+                        <div class="linha"></div>
+
+
+                        <form
+                            method="POST"
+                            action="/alterar-status-relato/{{ relato['id'] }}"
+                            class="form-status"
+                        >
+
+                            <div class="campo">
+
+                                <label for="status-relato-{{ relato['id'] }}">
+                                    Alterar status
+                                </label>
+
+                                <select
+                                    name="status"
+                                    id="status-relato-{{ relato['id'] }}"
+                                >
+
+                                    <option
+                                        value="Em análise"
+                                        {% if relato["status"] == "Em análise" %}selected{% endif %}
+                                    >
+                                        Em análise
+                                    </option>
+
+                                    <option
+                                        value="Em andamento"
+                                        {% if relato["status"] == "Em andamento" %}selected{% endif %}
+                                    >
+                                        Em andamento
+                                    </option>
+
+                                    <option
+                                        value="Concluída"
+                                        {% if relato["status"] == "Concluída" %}selected{% endif %}
+                                    >
+                                        Concluída
+                                    </option>
+
+                                    <option
+                                        value="Cancelado"
+                                        {% if relato["status"] == "Cancelado" %}selected{% endif %}
+                                    >
+                                        Cancelado
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="botao-salvar"
+                            >
+                                Salvar alteração
+                            </button>
+
+                        </form>
+
+                    </article>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    Nenhuma solicitação registrada.
+                </p>
+
+            {% endif %}
 
         </section>
 
@@ -197,13 +513,16 @@
 
             <div>
 
-                <strong>MAPA DA CIDADE</strong>
+                <strong>
+                    MAPA DA CIDADE
+                </strong>
 
                 <p>
                     Informações sobre obras e infraestrutura pública.
                 </p>
 
             </div>
+
 
             <div class="footer-direitos">
 
@@ -217,6 +536,127 @@
 
     </footer>
 
-</body>
+<script>
 
+    const botaoFiltros = document.getElementById("botao-filtros");
+
+    const opcoesFiltros = document.getElementById("opcoes-filtros");
+
+    const filtroTipo = document.getElementById("filtro-tipo");
+
+    const filtroStatus = document.getElementById("filtro-status");
+
+    const botaoLimpar = document.getElementById("limpar-filtros");
+
+    const itens = document.querySelectorAll(".item-admin");
+
+
+    // =========================
+    // ABRIR / FECHAR FILTROS
+    // =========================
+
+    botaoFiltros.addEventListener(
+        "click",
+        function () {
+
+            opcoesFiltros.classList.toggle("aberto");
+
+        }
+    );
+
+
+    // =========================
+    // APLICAR FILTROS
+    // =========================
+
+    function aplicarFiltros() {
+
+        const tipoSelecionado = filtroTipo.value;
+
+        const statusSelecionado = filtroStatus.value;
+
+
+        for (let i = 0; i < itens.length; i++) {
+
+            const item = itens[i];
+
+            const tipo = item.dataset.tipo;
+
+            const status = item.dataset.status;
+
+
+            let mostrar = true;
+
+
+            if (
+                tipoSelecionado !== "todos" &&
+                tipo !== tipoSelecionado
+            ) {
+
+                mostrar = false;
+
+            }
+
+
+            if (
+                statusSelecionado !== "todos" &&
+                status !== statusSelecionado
+            ) {
+
+                mostrar = false;
+
+            }
+
+
+            if (mostrar) {
+
+                item.style.display = "";
+
+            } else {
+
+                item.style.display = "none";
+
+            }
+
+        }
+
+    }
+
+
+    // =========================
+    // ALTERAÇÃO DOS FILTROS
+    // =========================
+
+    filtroTipo.addEventListener(
+        "change",
+        aplicarFiltros
+    );
+
+
+    filtroStatus.addEventListener(
+        "change",
+        aplicarFiltros
+    );
+
+
+    // =========================
+    // LIMPAR FILTROS
+    // =========================
+
+    botaoLimpar.addEventListener(
+        "click",
+        function () {
+
+            filtroTipo.value = "todos";
+
+            filtroStatus.value = "todos";
+
+            aplicarFiltros();
+
+        }
+    );
+
+</script>
+
+</body>
 </html>

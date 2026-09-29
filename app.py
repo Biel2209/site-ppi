@@ -4,11 +4,93 @@ from werkzeug.utils import secure_filename
 import sqlite3
 from datetime import datetime
 import os
+import threading
+import urllib.request
+import urllib.parse
+import json
 
 app = Flask(__name__)
 
 app.secret_key = os.environ.get("SECRET_KEY", "chave-temporaria")
 
+def descobrir_endereco(latitude, longitude):
+
+    try:
+        parametros = urllib.parse.urlencode({
+            "lat": latitude,
+            "lon": longitude,
+            "format": "json",
+            "addressdetails": 1
+        })
+
+        url = "https://nominatim.openstreetmap.org/reverse?" + parametros
+
+        requisicao = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": "MapaDaCidade-PPI/1.0"
+            }
+        )
+
+        with urllib.request.urlopen(
+            requisicao,
+            timeout=10
+        ) as resposta:
+
+            dados = json.loads(
+                resposta.read().decode("utf-8")
+            )
+
+        endereco = dados.get("address", {})
+
+        rua = (
+            endereco.get("road")
+            or endereco.get("pedestrian")
+            or endereco.get("residential")
+        )
+
+        bairro = (
+            endereco.get("neighbourhood")
+            or endereco.get("quarter")
+            or endereco.get("residential")
+        )
+
+        return rua, bairro
+
+    except Exception as erro:
+
+        print("Não foi possível descobrir o endereço:")
+        print(erro)
+
+        return None, None
+
+def atualizar_endereco_relato(id_relato, latitude, longitude):
+
+    print("Iniciando busca de endereço para o relato:", id_relato)
+
+    rua, bairro = descobrir_endereco(
+        latitude,
+        longitude
+    )
+
+    print("Rua encontrada:", rua)
+    print("Bairro encontrado:", bairro)
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE relatos
+        SET rua = ?, bairro = ?
+        WHERE id = ?
+    """, (
+        rua,
+        bairro,
+        id_relato
+    ))
+
+    conexao.commit()
+    conexao.close()
 
 @app.route("/")
 def inicio():
@@ -197,7 +279,6 @@ def enviar_relato():
     descricao = request.form.get("descricao")
     latitude = request.form.get("latitude")
     longitude = request.form.get("longitude")
-
     usuario_id = session.get("usuario_id")
 
     print("\n==============================")
@@ -223,7 +304,15 @@ def enviar_relato():
 
     cursor.execute("""
         INSERT INTO relatos
-        (tipo, descricao, latitude, longitude, status, data, usuario_id)
+        (
+            tipo,
+            descricao,
+            latitude,
+            longitude,
+            status,
+            data,
+            usuario_id
+        )
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         tipo,
@@ -239,6 +328,14 @@ def enviar_relato():
 
     conexao.commit()
     conexao.close()
+
+    print("Relato salvo no banco. ID:", id_relato)
+
+    threading.Thread(
+        target=atualizar_endereco_relato,
+        args=(id_relato, latitude, longitude),
+        daemon=True
+    ).start()
 
     # =========================
     # SALVAR FOTOS
@@ -287,6 +384,8 @@ def enviar_relato():
 
             conexao.close()
 
+    print("Fotos processadas. Preparando resposta do envio.")
+
     return jsonify({
         "sucesso": True,
         "mensagem": "Obrigado por contribuir! Sua solicitação foi enviada e está em análise."
@@ -326,7 +425,7 @@ def api_relatos():
     cursor = conexao.cursor()
 
     cursor.execute("""
-        SELECT id, tipo, descricao, latitude, longitude, status, data
+        SELECT id, tipo, descricao, latitude, longitude, status, data, rua, bairro
         FROM relatos
         ORDER BY id DESC
     """)
@@ -353,6 +452,8 @@ def api_relatos():
             "longitude": relato["longitude"],
             "status": relato["status"],
             "data": relato["data"],
+            "rua": relato["rua"],
+            "bairro": relato["bairro"],
             "fotos": [
                 foto["arquivo"]
                 for foto in fotos
@@ -514,6 +615,41 @@ def alterar_status(obra_id):
     return redirect("/admin")
 
 
+@app.route("/alterar-status-relato/<int:relato_id>", methods=["POST"])
+def alterar_status_relato(relato_id):
+
+    if session.get("usuario_perfil") != "admin":
+        return redirect("/")
+
+    novo_status = request.form.get("status")
+
+    status_permitidos = [
+        "Em análise",
+        "Em andamento",
+        "Concluída",
+        "Cancelado"
+    ]
+
+    if novo_status not in status_permitidos:
+        return redirect("/admin")
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        UPDATE relatos
+        SET status = ?
+        WHERE id = ?
+    """, (
+        novo_status,
+        relato_id
+    ))
+
+    conexao.commit()
+    conexao.close()
+
+    return redirect("/admin")
+
 # ==========================================
 # PAINEL ADMINISTRATIVO
 # ==========================================
@@ -536,11 +672,33 @@ def admin():
 
     obras = cursor.fetchall()
 
+    cursor.execute("""
+        SELECT *
+        FROM relatos
+        ORDER BY id DESC
+    """)
+
+    relatos = cursor.fetchall()
+
+    fotos_por_relato = {}
+
+    for relato in relatos:
+        cursor.execute("""
+            SELECT arquivo
+            FROM fotos
+            WHERE relato_id = ?
+            ORDER BY id
+        """, (relato["id"],))
+
+        fotos_por_relato[relato["id"]] = cursor.fetchall()
+
     conexao.close()
 
     return render_template(
         "admin.html",
-        obras=obras
+        obras=obras,
+        relatos=relatos,
+        fotos_por_relato=fotos_por_relato
     )
 
 @app.route("/api/obras")

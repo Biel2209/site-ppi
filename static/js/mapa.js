@@ -40,6 +40,27 @@ const azul = criarMarcador("#5581C9");
 const verde = criarMarcador("#4CAF7D");
 const vermelho = criarMarcador("#D9534F");
 const amarelo = criarMarcador("#E8B94A");
+const marcadoresMapa = [];
+
+let filtroAtual = "todos";
+
+function aplicarFiltroMapa() {
+
+    marcadoresMapa.forEach(function (item) {
+
+        if (
+            filtroAtual === "todos" ||
+            item.status === filtroAtual
+        ) {
+            item.marcador.addTo(mapa);
+        }
+        else {
+            mapa.removeLayer(item.marcador);
+        }
+
+    });
+
+}
 
 
 // =========================
@@ -112,29 +133,34 @@ fetch("/api/relatos")
             let icone;
 
             if (relato.status === "Em análise") {
-
                 icone = amarelo;
-
-            } else {
-
+            }
+            else if (relato.status === "Em andamento") {
+                icone = azul;
+            }
+            else if (relato.status === "Concluída") {
+                icone = verde;
+            }
+            else if (relato.status === "Cancelado") {
                 icone = vermelho;
-
             }
 
 
             const marcador = L.marker(
-
                 [
                     parseFloat(relato.latitude),
                     parseFloat(relato.longitude)
                 ],
-
                 {
                     icon: icone
                 }
+            );
 
-            ).addTo(mapa);
-
+            marcadoresMapa.push({
+                marcador: marcador,
+                status: relato.status
+            });
+            aplicarFiltroMapa();
 
             // =========================
             // FOTOS DO RELATO
@@ -167,10 +193,24 @@ fetch("/api/relatos")
             // =========================
 
             marcador.bindPopup(`
-
+                
                 <strong>
                     ${relato.tipo}
                 </strong>
+
+                <br><br>
+
+                <strong>
+                    📍 Rua:
+                </strong>
+                ${relato.rua || "Não informada"}
+
+                <br>
+
+                <strong>
+                    🏘️ Bairro:
+                </strong>
+                ${relato.bairro || "Não informado"}
 
                 <br><br>
 
@@ -181,7 +221,7 @@ fetch("/api/relatos")
                 <strong>
                     Status:
                 </strong>
-
+                
                 ${relato.status}
 
                 <br>
@@ -189,11 +229,10 @@ fetch("/api/relatos")
                 <strong>
                     Registrado em:
                 </strong>
-
+                
                 ${relato.data}
 
                 ${imagens}
-
             `);
 
         });
@@ -251,6 +290,12 @@ fetch("/api/obras")
 
             }
 
+            else if (obra.status === "Cancelado") {
+
+                icone = vermelho;
+
+            }
+
             else {
 
                 icone = azul;
@@ -263,25 +308,26 @@ fetch("/api/obras")
             // =========================
 
             const marcador = L.marker(
-
                 [
                     parseFloat(obra.latitude),
                     parseFloat(obra.longitude)
                 ],
-
                 {
                     icon: icone
                 }
+            );
 
-            ).addTo(mapa);
-
+            marcadoresMapa.push({
+                marcador: marcador,
+                status: obra.status
+            });
+            aplicarFiltroMapa();
 
             // =========================
             // POPUP DA OBRA
             // =========================
 
             let popup = `
-
                 <strong>
                     ${obra.titulo}
                 </strong>
@@ -289,19 +335,23 @@ fetch("/api/obras")
                 <br><br>
 
                 <strong>
-                    Local:
+                    📍 Rua:
                 </strong>
+                ${obra.rua || obra.localizacao || "Não informada"}
 
-                ${obra.localizacao}
+                <br>
+
+                <strong>
+                    🏘️ Bairro:
+                </strong>
+                ${obra.bairro || "Não informado"}
 
                 <br><br>
 
                 <strong>
                     Status:
                 </strong>
-
                 ${obra.status}
-
             `;
 
 
@@ -349,3 +399,29 @@ fetch("/api/obras")
         );
 
     });
+
+const botaoFiltros = document.getElementById("botao-filtros");
+const painelFiltros = document.getElementById("painel-filtros");
+const filtroStatus = document.getElementById("filtro-status");
+
+if (botaoFiltros && painelFiltros) {
+
+    botaoFiltros.addEventListener("click", function () {
+
+        painelFiltros.classList.toggle("aberto");
+
+    });
+
+}
+
+if (filtroStatus) {
+
+    filtroStatus.addEventListener("change", function () {
+
+        filtroAtual = filtroStatus.value;
+
+        aplicarFiltroMapa();
+
+    });
+
+}    

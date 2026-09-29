@@ -65,6 +65,42 @@
 
     <main>
 
+        <button id="botao-filtros" class="botao-filtros">
+            ☷ Filtrar mapa
+        </button>
+
+        <div id="painel-filtros" class="painel-filtros">
+
+            <label for="filtro-status">
+                Status
+            </label>
+
+            <select id="filtro-status">
+
+                <option value="todos">
+                    Todos
+                </option>
+
+                <option value="Em andamento">
+                    🔵 Em andamento
+                </option>
+
+                <option value="Concluída">
+                    🟢 Concluída
+                </option>
+
+                <option value="Cancelado">
+                    🔴 Cancelada
+                </option>
+
+                <option value="Em análise">
+                    🟡 Em análise
+                </option>
+
+            </select>
+
+        </div>
+
         <div id="mapa"></div>
 
     </main>

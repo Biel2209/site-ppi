@@ -92,14 +92,25 @@ body {
 
 
 /* =========================
-   CARDS
+   SEÇÕES
 ========================= */
 
 .lista-obras {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    margin-bottom: 50px;
 }
+
+.lista-obras > h2 {
+    font-size: 25px;
+    margin-bottom: 2px;
+}
+
+
+/* =========================
+   CARDS
+========================= */
 
 .card-obra {
     background: #ffffff;
@@ -137,6 +148,7 @@ body {
 .localizacao {
     color: #68747c;
     font-size: 14px;
+    line-height: 1.7;
 }
 
 .descricao {
@@ -172,6 +184,11 @@ body {
 .status.analise {
     background: #fff4d6;
     color: #a47d16;
+}
+
+.status.cancelado {
+    background: #fde8e7;
+    color: #d9534f;
 }
 
 
@@ -292,6 +309,7 @@ body {
 
 }
 
+
 @media (max-width: 600px) {
 
     .conteudo {
@@ -300,6 +318,10 @@ body {
 
     .titulo h1 {
         font-size: 28px;
+    }
+
+    .lista-obras > h2 {
+        font-size: 22px;
     }
 
     .obra-topo {
@@ -321,6 +343,179 @@ body {
 
     .footer-direitos {
         text-align: left;
+    }
+
+}
+
+/* =========================
+   FILTROS ADMINISTRATIVOS
+========================= */
+
+.filtros-admin {
+    background: #ffffff;
+    border: 1px solid #e3e7eb;
+    border-radius: 14px;
+    margin-bottom: 40px;
+}
+
+
+.filtros-admin-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px;
+}
+
+
+.filtros-admin-topo div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+.filtros-admin-topo strong {
+    font-size: 15px;
+    color: #263238;
+}
+
+
+.filtros-admin-topo span {
+    font-size: 13px;
+    color: #68747c;
+}
+
+
+.botao-filtros {
+    height: 38px;
+    padding: 0 16px;
+
+    border: 1px solid #d7dde2;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #45535b;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    cursor: pointer;
+    transition: 0.2s;
+
+    white-space: nowrap;
+}
+
+
+.botao-filtros:hover {
+    border-color: #5581c9;
+    color: #5581c9;
+}
+
+
+.opcoes-filtros {
+    display: none;
+
+    grid-template-columns: 1fr 1fr auto;
+
+    align-items: end;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    border-top: 1px solid #edf0f2;
+}
+
+
+.opcoes-filtros.aberto {
+    display: grid;
+}
+
+
+.filtro-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+
+.filtro-campo label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #45535b;
+}
+
+
+.filtro-campo select {
+    height: 42px;
+
+    padding: 0 12px;
+
+    border: 1px solid #d7dde2;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #263238;
+
+    font-size: 14px;
+
+    outline: none;
+    cursor: pointer;
+}
+
+
+.filtro-campo select:focus {
+    border-color: #5581c9;
+}
+
+
+.botao-limpar-filtros {
+    height: 42px;
+
+    padding: 0 18px;
+
+    border: 1px solid #d7dde2;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #45535b;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.botao-limpar-filtros:hover {
+    border-color: #5581c9;
+    color: #5581c9;
+}
+
+
+/* =========================
+   FILTROS NO CELULAR
+========================= */
+
+@media (max-width: 600px) {
+
+    .filtros-admin-topo {
+        align-items: flex-start;
+    }
+
+
+    .opcoes-filtros.aberto {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .botao-limpar-filtros {
+        width: 100%;
     }
 
 }
