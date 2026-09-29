@@ -519,3 +519,208 @@ body {
     }
 
 }
+
+/* ==========================================
+   CADASTRO DE OBRAS
+========================================== */
+
+.titulo-secao-obras {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.titulo-secao-obras h2 {
+    margin: 0;
+}
+
+.botao-cadastrar-obra {
+    height: 40px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 8px;
+    background: #5581c9;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.botao-cadastrar-obra:hover {
+    background: #466fb2;
+}
+
+.formulario-cadastro-obra {
+    display: none;
+    margin-bottom: 30px;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #e3e7eb;
+    border-radius: 14px;
+}
+
+.formulario-cadastro-obra.aberto {
+    display: block;
+}
+
+.formulario-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.formulario-topo div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.formulario-topo strong {
+    color: #263238;
+    font-size: 17px;
+}
+
+.formulario-topo span {
+    color: #68747c;
+    font-size: 13px;
+}
+
+.botao-fechar-formulario {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #d7dde2;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #45535b;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.botao-fechar-formulario:hover {
+    border-color: #5581c9;
+    color: #5581c9;
+}
+
+.campo-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 16px;
+}
+
+.campo-formulario label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #45535b;
+}
+
+.campo-formulario input,
+.campo-formulario textarea,
+.campo-formulario select {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #d7dde2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #263238;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.campo-formulario input,
+.campo-formulario select {
+    height: 42px;
+}
+
+.campo-formulario textarea {
+    resize: vertical;
+}
+
+.campo-formulario input:focus,
+.campo-formulario textarea:focus,
+.campo-formulario select:focus {
+    border-color: #5581c9;
+}
+
+.campos-duplos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.localizacao-coordenadas {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 8px 0 16px;
+    padding: 14px;
+    border-radius: 9px;
+    background: #f3f5f7;
+}
+
+.localizacao-coordenadas strong {
+    font-size: 13px;
+    color: #263238;
+}
+
+.localizacao-coordenadas span {
+    font-size: 12px;
+    color: #68747c;
+}
+
+.acoes-formulario-obra {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.botao-cancelar-formulario {
+    height: 42px;
+    padding: 0 18px;
+    border: 1px solid #d7dde2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #45535b;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-cancelar-formulario:hover {
+    border-color: #5581c9;
+    color: #5581c9;
+}
+
+@media (max-width: 600px) {
+
+    .titulo-secao-obras {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .botao-cadastrar-obra {
+        width: 100%;
+    }
+
+    .campos-duplos {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .acoes-formulario-obra {
+        flex-direction: column;
+    }
+
+    .botao-cancelar-formulario,
+    .acoes-formulario-obra .botao-salvar {
+        width: 100%;
+    }
+
+}

@@ -15,6 +15,8 @@
         href="{{ url_for('static', filename='css/admin.css') }}"
     >
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
 </head>
 
 <body>
@@ -97,6 +99,249 @@
         </section>
 
     <!-- ==========================================
+     FORMULÁRIO DE CADASTRO DE OBRA
+    ========================================== -->
+
+    <div class="titulo-secao-obras">
+
+        <h2>
+            Obras cadastradas
+        </h2>
+
+        <button
+            type="button"
+            id="botao-cadastrar-obra"
+            class="botao-cadastrar-obra"
+        >
+            + Cadastrar obra
+        </button>
+
+    </div>
+
+    <div
+        id="formulario-cadastro-obra"
+        class="formulario-cadastro-obra"
+    >
+
+        <div class="formulario-topo">
+
+            <div>
+
+                <strong>
+                    Cadastrar nova obra
+                </strong>
+
+                <span>
+                    Adicione uma obra pública ao sistema.
+                </span>
+
+            </div>
+
+            <button
+                type="button"
+                id="fechar-formulario-obra"
+                class="botao-fechar-formulario"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="/cadastrar-obra"
+        >
+
+            <div class="campo-formulario">
+
+                <label for="titulo-obra">
+                    Título da obra
+                </label>
+
+                <input
+                    type="text"
+                    id="titulo-obra"
+                    name="titulo"
+                    placeholder="Ex.: Pavimentação da Rua X"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campo-formulario">
+
+                <label for="localizacao-obra">
+                    Localização
+                </label>
+
+                <input
+                    type="text"
+                    id="localizacao-obra"
+                    name="localizacao"
+                    placeholder="Ex.: Rua dos Estudantes"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campo-formulario">
+
+                <label for="descricao-obra">
+                    Descrição
+                </label>
+
+                <textarea
+                    id="descricao-obra"
+                    name="descricao"
+                    placeholder="Descreva a obra..."
+                    rows="4"
+                ></textarea>
+
+            </div>
+
+
+            <div class="campos-duplos">
+
+                <div class="campo-formulario">
+
+                    <label for="previsao-obra">
+                        Previsão de conclusão
+                    </label>
+
+                    <input
+                        type="date"
+                        id="previsao-obra"
+                        name="previsao"
+                    >
+
+                </div>
+
+
+                <div class="campo-formulario">
+
+                    <label for="status-obra">
+                        Status
+                    </label>
+
+                    <select
+                        id="status-obra"
+                        name="status"
+                    >
+
+                        <option value="Em análise">
+                            Em análise
+                        </option>
+
+                        <option value="Em andamento">
+                            Em andamento
+                        </option>
+
+                        <option value="Concluída">
+                            Concluída
+                        </option>
+
+                        <option value="Cancelado">
+                            Cancelado
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="localizacao-coordenadas">
+
+                <strong>
+                    Localização no mapa
+                </strong>
+
+                <span>
+                    Informe as coordenadas para a obra aparecer no mapa.
+                </span>
+
+                <div
+                    id="mapa-obra"
+                    style="width: 100%; height: 260px; margin-top: 12px; border-radius: 8px;"
+                ></div>
+
+            </div>
+
+
+            <div class="campos-duplos">
+
+                <div class="campo-formulario">
+
+                    <label for="latitude-obra">
+                        Latitude
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        id="latitude-obra"
+                        name="latitude"
+                        placeholder="-20.4711"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo-formulario">
+
+                    <label for="longitude-obra">
+                        Longitude
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        id="longitude-obra"
+                        name="longitude"
+                        placeholder="-55.7874"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="acoes-formulario-obra">
+
+                <button
+                    type="button"
+                    id="cancelar-cadastro-obra"
+                    class="botao-cancelar-formulario"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="botao-salvar"
+                >
+                    Cadastrar obra
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+        <!-- ==========================================
+             OBRAS
+        ========================================== -->
+
+            <!-- ==========================================
         FILTROS ADMINISTRATIVOS
     ========================================== -->
 
@@ -198,17 +443,7 @@
 
     </div>
 
-
-
-        <!-- ==========================================
-             OBRAS
-        ========================================== -->
-
         <section class="lista-obras">
-
-            <h2>
-                Obras cadastradas
-            </h2>
 
             {% for obra in obras %}
 
@@ -536,127 +771,8 @@
 
     </footer>
 
-<script>
-
-    const botaoFiltros = document.getElementById("botao-filtros");
-
-    const opcoesFiltros = document.getElementById("opcoes-filtros");
-
-    const filtroTipo = document.getElementById("filtro-tipo");
-
-    const filtroStatus = document.getElementById("filtro-status");
-
-    const botaoLimpar = document.getElementById("limpar-filtros");
-
-    const itens = document.querySelectorAll(".item-admin");
-
-
-    // =========================
-    // ABRIR / FECHAR FILTROS
-    // =========================
-
-    botaoFiltros.addEventListener(
-        "click",
-        function () {
-
-            opcoesFiltros.classList.toggle("aberto");
-
-        }
-    );
-
-
-    // =========================
-    // APLICAR FILTROS
-    // =========================
-
-    function aplicarFiltros() {
-
-        const tipoSelecionado = filtroTipo.value;
-
-        const statusSelecionado = filtroStatus.value;
-
-
-        for (let i = 0; i < itens.length; i++) {
-
-            const item = itens[i];
-
-            const tipo = item.dataset.tipo;
-
-            const status = item.dataset.status;
-
-
-            let mostrar = true;
-
-
-            if (
-                tipoSelecionado !== "todos" &&
-                tipo !== tipoSelecionado
-            ) {
-
-                mostrar = false;
-
-            }
-
-
-            if (
-                statusSelecionado !== "todos" &&
-                status !== statusSelecionado
-            ) {
-
-                mostrar = false;
-
-            }
-
-
-            if (mostrar) {
-
-                item.style.display = "";
-
-            } else {
-
-                item.style.display = "none";
-
-            }
-
-        }
-
-    }
-
-
-    // =========================
-    // ALTERAÇÃO DOS FILTROS
-    // =========================
-
-    filtroTipo.addEventListener(
-        "change",
-        aplicarFiltros
-    );
-
-
-    filtroStatus.addEventListener(
-        "change",
-        aplicarFiltros
-    );
-
-
-    // =========================
-    // LIMPAR FILTROS
-    // =========================
-
-    botaoLimpar.addEventListener(
-        "click",
-        function () {
-
-            filtroTipo.value = "todos";
-
-            filtroStatus.value = "todos";
-
-            aplicarFiltros();
-
-        }
-    );
-
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 
 </body>
 </html>

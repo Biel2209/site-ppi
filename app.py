@@ -101,7 +101,7 @@ def inicio():
     # Quantidade de obras em andamento
     cursor.execute("""
         SELECT COUNT(*)
-        FROM relatos
+        FROM obras
         WHERE status = ?
     """, ("Em andamento",))
 
@@ -110,7 +110,7 @@ def inicio():
     # Quantidade de obras concluídas
     cursor.execute("""
         SELECT COUNT(*)
-        FROM relatos
+        FROM obras
         WHERE status = ?
     """, ("Concluída",))
 
@@ -643,6 +643,63 @@ def alterar_status_relato(relato_id):
     """, (
         novo_status,
         relato_id
+    ))
+
+    conexao.commit()
+    conexao.close()
+
+    return redirect("/admin")
+
+@app.route("/cadastrar-obra", methods=["POST"])
+def cadastrar_obra():
+
+    if session.get("usuario_perfil") != "admin":
+        return redirect("/")
+
+    titulo = request.form.get("titulo")
+    localizacao = request.form.get("localizacao")
+    descricao = request.form.get("descricao")
+    previsao = request.form.get("previsao")
+    status = request.form.get("status")
+    latitude = request.form.get("latitude")
+    longitude = request.form.get("longitude")
+
+    if not titulo or not localizacao or not latitude or not longitude:
+        return redirect("/admin")
+
+    status_permitidos = [
+        "Em análise",
+        "Em andamento",
+        "Concluída",
+        "Cancelado"
+    ]
+
+    if status not in status_permitidos:
+        return redirect("/admin")
+
+    conexao = sqlite3.connect("mapa_cidade.db")
+    cursor = conexao.cursor()
+
+    cursor.execute("""
+        INSERT INTO obras
+        (
+            titulo,
+            localizacao,
+            status,
+            previsao,
+            descricao,
+            latitude,
+            longitude
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        titulo,
+        localizacao,
+        status,
+        previsao,
+        descricao,
+        latitude,
+        longitude
     ))
 
     conexao.commit()
