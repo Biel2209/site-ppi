@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar e-mail - FalaCidade</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro.css') }}">
+</head>
+
+<body>
+    <main class="cadastro">
+        <div class="cadastro-card">
+            <h1>Verificar e-mail</h1>
+            <p>Digite o código enviado para {{ email }}.</p>
+            {% if mensagem %}<p role="alert">{{ mensagem }}</p>{% endif %}
+
+            <form action="/verificar-email" method="POST">
+                <label for="codigo">Código de verificação</label>
+                <input type="text" id="codigo" name="codigo" inputmode="numeric"
+                    pattern="[0-9]{6}" minlength="6" maxlength="6" autocomplete="one-time-code" required>
+                <button type="submit">Confirmar e-mail</button>
+            </form>
+
+            <form action="/reenviar-codigo" method="POST">
+                <button type="submit">Reenviar código</button>
+            </form>
+
+            <p class="login-link"><a href="/login">Voltar para entrar</a></p>
+        </div>
+    </main>
+</body>
+
+</html>

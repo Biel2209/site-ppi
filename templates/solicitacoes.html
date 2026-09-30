@@ -1,225 +1,111 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Minhas solicitações - Mapa da Cidade</title>
-
+    <title>{% if perfil_admin %}Solicitações - FalaCidade{% else %}Minhas solicitações - FalaCidade{% endif %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/solicitacoes.css') }}">
-
 </head>
-
 <body>
-
     <header class="header">
-
-        <div class="logo">
-            MAPA DA CIDADE
-        </div>
-
-        <nav class="menu">
-
+        <div class="logo">FalaCidade</div>
+        <nav class="menu" aria-label="Navegação principal">
             <a href="/">Início</a>
-
             <a href="/mapa">Mapa</a>
-
             <a href="/obras">Obras</a>
-
             <a href="/relatar">Relatar problema</a>
-
-            <a href="/solicitacoes">Minhas solicitações</a>
-
+            <a href="/solicitacoes" class="ativo">Minhas solicitações</a>
             {% if session.get("usuario_id") %}
-
-                {% if session.get("usuario_perfil") == "admin" %}
-                    <a href="/admin">
-                        Administração
-                    </a>
-                {% endif %}
-
-                <span class="usuario">
-                    Olá, {{ session.get("usuario_nome") }}
-                </span>
-
-                <a href="/logout">
-                    Sair
-                </a>
-
+                {% if perfil_admin %}<a href="/admin">Administração</a>{% endif %}
+                <span class="usuario">Olá, {{ session.get("usuario_nome", "") }}</span>
+                <a href="/logout">Sair</a>
             {% else %}
-
-                <a href="/login">
-                    Entrar
-                </a>
-
+                <a href="/login">Entrar</a>
             {% endif %}
-
         </nav>
-
     </header>
 
     <main>
-
         <section class="titulo">
-
-            <h1>Minhas solicitações</h1>
-
-            <p>
-                Acompanhe os problemas e solicitações que foram registrados.
-            </p>
-
+            <h1>{% if perfil_admin %}Todas as solicitações{% else %}Minhas solicitações{% endif %}</h1>
+            <p>{% if perfil_admin %}Visualização de todos os relatos enviados. A administração e atualização de status continuam disponíveis no painel administrativo.{% else %}Acompanhe os problemas e solicitações que você registrou.{% endif %}</p>
+            {% if perfil_admin %}<a class="link-admin" href="/admin">Gerenciar no painel administrativo</a>{% endif %}
         </section>
 
-
-        <section class="lista-solicitacoes">
-
+        <section class="lista-solicitacoes" aria-label="Solicitações">
             {% if relatos %}
-
                 {% for item in relatos %}
-
-                    <div class="card-solicitacao">
-
+                    {% set relato = item['relato'] %}
+                    {% set status = relato['status'] %}
+                    {% if status == 'Em análise' %}
+                        {% set classe_status = 'status-analise' %}
+                    {% elif status == 'Em andamento' %}
+                        {% set classe_status = 'status-andamento' %}
+                    {% elif status == 'Concluída' %}
+                        {% set classe_status = 'status-concluida' %}
+                    {% elif status == 'Cancelado' %}
+                        {% set classe_status = 'status-cancelado' %}
+                    {% else %}
+                        {% set classe_status = 'status-desconhecido' %}
+                    {% endif %}
+                    <article class="card-solicitacao">
                         <div class="topo-card">
-
-                            <span class="status
-                                {% if item['relato']['status'] == 'Em análise' %}
-                                    status-analise
-                                {% elif item['relato']['status'] == 'Em andamento' %}
-                                    status-andamento
-                                {% elif item['relato']['status'] == 'Concluída' %}
-                                    status-concluida
-                                {% elif item['relato']['status'] == 'Cancelado' %}
-                                    status-cancelado
-                                {% endif %}
-                            ">
-                                {{ item["relato"]["status"] }}
-                            </span>
-
-                            <span class="data">
-                                {{ item["relato"]["data"] }}
-                            </span>
-
+                            <span class="status {{ classe_status }}">{{ 'Cancelada' if status == 'Cancelado' else status }}</span>
+                            <time class="data">{{ relato['data'] or 'Data indisponível' }}</time>
                         </div>
+                        {% if perfil_admin %}<p class="identificacao-relato">Solicitação #{{ relato['id'] }}{% if relato['usuario_id'] %} · Usuário #{{ relato['usuario_id'] }}{% endif %}</p>{% endif %}
+                        {% if relato['tipo'] %}<h2>{{ relato['tipo'] }}</h2>{% endif %}
+                        <p class="descricao">{{ relato['descricao'] }}</p>
 
-
-                        <h2>
-                            {{ item["relato"]["tipo"] }}
-                        </h2>
-
-
-                        <p class="descricao">
-                            {{ item["relato"]["descricao"] }}
-                        </p>
-
-
-                        {% if item["fotos"] %}
-
-                            <div class="fotos-solicitacao">
-
-                                {% for foto in item["fotos"] %}
-
-                                    <img
-                                        src="{{ url_for('static', filename='uploads/' + foto['arquivo']) }}"
-                                        alt="Foto do problema relatado"
-                                    >
-
-                                {% endfor %}
-
+                        {% if relato['rua'] or relato['bairro'] %}
+                            <div class="localizacao-detalhes">
+                                {% if relato['rua'] %}<p><strong>Rua:</strong> {{ relato['rua'] }}</p>{% endif %}
+                                {% if relato['bairro'] %}<p><strong>Bairro:</strong> {{ relato['bairro'] }}</p>{% endif %}
                             </div>
-
                         {% endif %}
 
-
-                        <div class="localizacao">
-                            <span>
-                                Localização
-                            </span>
-
-                            <strong>
-                                {{ "%.5f"|format(item["relato"]["latitude"]|float) }},
-                                {{ "%.5f"|format(item["relato"]["longitude"]|float) }}
-                            </strong>
-                        </div>
-
-                        {% if item["relato"]["status"] == "Em análise" %}
-
-                            <button
-                                type="button"
-                                class="botao-cancelar"
-                                data-id="{{ item['relato']['id'] }}"
-                            >
-                                Cancelar solicitação
-                            </button>
-
+                        {% if relato['latitude'] is not none and relato['longitude'] is not none %}
+                            <div class="localizacao">
+                                <span>Localização</span>
+                                <strong>{{ "%.5f"|format(relato['latitude']|float) }}, {{ "%.5f"|format(relato['longitude']|float) }}</strong>
+                            </div>
                         {% endif %}
 
-                    </div>
+                        {% if item['fotos'] %}
+                            <div class="fotos-solicitacao">
+                                {% for foto in item['fotos'] %}
+                                    <img src="{{ url_for('static', filename='uploads/' + foto['arquivo']) }}" alt="Foto do problema relatado" loading="lazy">
+                                {% endfor %}
+                            </div>
+                        {% endif %}
 
+                        {% if not perfil_admin and session.get("usuario_id") and status == 'Em análise' %}
+                            <button type="button" class="botao-cancelar" data-id="{{ relato['id'] }}">Cancelar solicitação</button>
+                        {% endif %}
+                    </article>
                 {% endfor %}
-
             {% else %}
-
                 <div class="sem-solicitacoes">
-
-                    <h2>
-                        Nenhuma solicitação encontrada
-                    </h2>
-
-                    <p>
-                        Quando você enviar um relato, ele aparecerá aqui.
-                    </p>
-
-                    <a href="/relatar">
-                        Relatar um problema
-                    </a>
-
+                    <h2>{% if perfil_admin %}Nenhuma solicitação encontrada{% else %}Você ainda não enviou nenhuma solicitação{% endif %}</h2>
+                    {% if not perfil_admin %}
+                        <p>Quando você relatar um problema, ele aparecerá aqui.</p>
+                        <a href="/relatar">Relatar um problema</a>
+                    {% endif %}
                 </div>
-
             {% endif %}
-
         </section>
-
     </main>
-<div id="modal-cancelamento" class="modal">
 
-    <div class="modal-card">
-
-        <h2>
-            Cancelar solicitação?
-        </h2>
-
-        <p>
-            Tem certeza que deseja cancelar esta solicitação?
-        </p>
-
-        <div class="modal-botoes">
-
-            <button
-                type="button"
-                id="fechar-modal"
-                class="botao-voltar"
-            >
-                Voltar
-            </button>
-
-            <button
-                type="button"
-                id="confirmar-cancelamento"
-                class="botao-confirmar"
-            >
-                Sim, cancelar
-            </button>
-
+    <div id="modal-cancelamento" class="modal">
+        <div class="modal-card">
+            <h2>Cancelar solicitação?</h2>
+            <p>Tem certeza que deseja cancelar esta solicitação?</p>
+            <div class="modal-botoes">
+                <button type="button" id="fechar-modal" class="botao-voltar">Voltar</button>
+                <button type="button" id="confirmar-cancelamento" class="botao-confirmar">Sim, cancelar</button>
+            </div>
         </div>
-
     </div>
-
-</div>
-
-<script src="{{ url_for('static', filename='js/solicitacoes.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='js/solicitacoes.js') }}"></script>
 </body>
-
 </html>

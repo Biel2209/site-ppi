@@ -42,11 +42,35 @@ confirmarCancelamento.addEventListener("click", function () {
         method: "POST"
     })
 
-    .then(function (resposta) {
-        return resposta.json();
+    .then(async function (resposta) {
+        const tipoConteudo = resposta.headers.get("content-type") || "";
+        if (!tipoConteudo.includes("application/json")) {
+            throw new Error("A resposta do servidor não contém JSON válido.");
+        }
+
+        const resultado = await resposta.json();
+        if (
+            !resultado ||
+            typeof resultado !== "object" ||
+            Array.isArray(resultado) ||
+            typeof resultado.sucesso !== "boolean" ||
+            typeof resultado.mensagem !== "string"
+        ) {
+            throw new Error("Resposta inesperada ao cancelar a solicitacao.");
+        }
+
+        if (!resposta.ok) {
+            alert(resultado.mensagem || "Não foi possível cancelar a solicitação.");
+            return null;
+        }
+        return resultado;
     })
 
     .then(function (resultado) {
+
+        if (!resultado) {
+            return;
+        }
 
         if (resultado.sucesso) {
 
@@ -54,7 +78,7 @@ confirmarCancelamento.addEventListener("click", function () {
 
         } else {
 
-            alert(resultado.mensagem);
+            alert(resultado.mensagem || "Não foi possível cancelar a solicitação.");
 
         }
 
@@ -63,6 +87,7 @@ confirmarCancelamento.addEventListener("click", function () {
     .catch(function (erro) {
 
         console.error("Erro ao cancelar:", erro);
+        alert("Ocorreu um erro ao cancelar. Tente novamente.");
 
     });
 

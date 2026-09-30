@@ -331,3 +331,96 @@ main {
     background: #D9534F;
     color: #FFFFFF;
 }
+
+.usuario {
+    color: #5F6B72;
+}
+
+.status-desconhecido {
+    background: #ECEFF1;
+    color: #546E7A;
+}
+
+.localizacao-detalhes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.localizacao-detalhes p {
+    margin: 0;
+    color: #5F6B72;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.localizacao-detalhes strong,
+.identificacao-relato {
+    color: #263238;
+}
+
+.identificacao-relato {
+    margin: 0 0 10px;
+    font-size: 13px;
+}
+
+.descricao {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.link-admin {
+    display: inline-block;
+    margin-top: 14px;
+    color: #5581C9;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.link-admin:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+    .header {
+        height: auto;
+        min-height: 70px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px 20px;
+    }
+
+    .menu {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 12px 18px;
+    }
+
+    main {
+        padding: 34px 18px;
+    }
+
+    .titulo h1 {
+        font-size: 29px;
+    }
+
+    .card-solicitacao {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .topo-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .fotos-solicitacao img {
+        width: calc(50% - 5px);
+        height: 110px;
+    }
+}

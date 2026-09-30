@@ -40,6 +40,18 @@ const amarelo = criarMarcador("#E8B94A");
 const verde = criarMarcador("#4CAF7D");
 const azul = criarMarcador("#5581C9");
 
+function escaparHtml(valor) {
+    return String(valor ?? "").replace(/[&<>\"']/g, function (caractere) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;"
+        }[caractere];
+    });
+}
+
 
 // =========================
 // ESCOLHER COR DO RELATO
@@ -111,7 +123,7 @@ function criarPopup(relato) {
             fotos += `
 
                 <img
-                    src="/static/uploads/${foto}"
+                    src="/static/uploads/${escaparHtml(foto)}"
                     alt="Foto do problema"
                     style="
                         width: 100%;
@@ -132,12 +144,12 @@ function criarPopup(relato) {
     return `
 
         <strong>
-            ${relato.tipo}
+            ${escaparHtml(relato.tipo)}
         </strong>
 
         <br><br>
 
-        ${relato.descricao}
+        ${escaparHtml(relato.descricao)}
 
         <br><br>
 
@@ -145,7 +157,7 @@ function criarPopup(relato) {
             Status:
         </strong>
 
-        ${relato.status}
+        ${escaparHtml(relato.status)}
 
         <br>
 
@@ -153,7 +165,7 @@ function criarPopup(relato) {
             Registrado em:
         </strong>
 
-        ${relato.data}
+        ${escaparHtml(relato.data)}
 
         ${fotos}
 
@@ -171,7 +183,7 @@ function criarPopupObra(obra) {
     let popup = `
 
         <strong>
-            ${obra.titulo}
+        ${escaparHtml(obra.titulo)}
         </strong>
 
         <br><br>
@@ -180,7 +192,7 @@ function criarPopupObra(obra) {
             Local:
         </strong>
 
-        ${obra.localizacao}
+        ${escaparHtml(obra.localizacao)}
 
         <br><br>
 
@@ -188,7 +200,7 @@ function criarPopupObra(obra) {
             Status:
         </strong>
 
-        ${obra.status}
+        ${escaparHtml(obra.status)}
 
     `;
 
@@ -203,7 +215,7 @@ function criarPopupObra(obra) {
                 Previsão:
             </strong>
 
-            ${obra.previsao}
+            ${escaparHtml(obra.previsao)}
 
         `;
 
@@ -216,7 +228,7 @@ function criarPopupObra(obra) {
 
             <br><br>
 
-            ${obra.descricao}
+            ${escaparHtml(obra.descricao)}
 
         `;
 

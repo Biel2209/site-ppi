@@ -4,6 +4,7 @@ import sqlite3
 def criar_banco():
 
     conexao = sqlite3.connect("mapa_cidade.db")
+    conexao.execute("PRAGMA foreign_keys = ON")
     cursor = conexao.cursor()
 
     # =========================
@@ -103,6 +104,22 @@ def criar_banco():
             ALTER TABLE usuarios
             ADD COLUMN perfil TEXT NOT NULL DEFAULT 'usuario'
         """)
+
+    # Mantém contas existentes utilizáveis e adiciona os dados de verificação.
+    cursor.execute("PRAGMA table_info(usuarios)")
+    nomes_colunas_usuarios = [coluna[1] for coluna in cursor.fetchall()]
+    colunas_verificacao = {
+        "email_verificado": "INTEGER NOT NULL DEFAULT 1",
+        "codigo_verificacao_hash": "TEXT",
+        "codigo_expira_em": "TEXT",
+        "codigo_ultimo_envio_em": "TEXT",
+        "codigo_tentativas": "INTEGER NOT NULL DEFAULT 0",
+    }
+    for nome_coluna, definicao in colunas_verificacao.items():
+        if nome_coluna not in nomes_colunas_usuarios:
+            cursor.execute(
+                f"ALTER TABLE usuarios ADD COLUMN {nome_coluna} {definicao}"
+            )
 
     # =========================
     # TABELA DE OBRAS
@@ -279,13 +296,15 @@ criar_banco()
 email_admin = "adm@exemplo.com"
 
 conexao = sqlite3.connect("mapa_cidade.db")
+conexao.execute("PRAGMA foreign_keys = ON")
 cursor = conexao.cursor()
 
-cursor.execute("""
-    UPDATE usuarios
-    SET perfil = 'admin'
-    WHERE email = ?
-""", (email_admin,))
-
-conexao.commit()
-conexao.close()
+try:
+    cursor.execute("""
+        UPDATE usuarios
+        SET perfil = 'admin'
+        WHERE email = ?
+    """, (email_admin,))
+    conexao.commit()
+finally:
+    conexao.close()

@@ -42,6 +42,18 @@ const vermelho = criarMarcador("#D9534F");
 const amarelo = criarMarcador("#E8B94A");
 const marcadoresMapa = [];
 
+function escaparHtml(valor) {
+    return String(valor ?? "").replace(/[&<>\"']/g, function (caractere) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;"
+        }[caractere];
+    });
+}
+
 let filtroAtual = "todos";
 
 function aplicarFiltroMapa() {
@@ -67,7 +79,17 @@ function aplicarFiltroMapa() {
 // LOCALIZAÇÃO DO USUÁRIO
 // =========================
 
-navigator.geolocation.getCurrentPosition(
+function usarCentroPadrao() {
+    mapa.setView([-20.4711, -55.7874], 13);
+    L.popup()
+        .setLatLng([-20.4711, -55.7874])
+        .setContent("Não foi possível acessar sua localização.")
+        .openOn(mapa);
+}
+
+if (navigator.geolocation && navigator.geolocation.getCurrentPosition) {
+
+    navigator.geolocation.getCurrentPosition(
 
     function (posicao) {
 
@@ -89,29 +111,12 @@ navigator.geolocation.getCurrentPosition(
 
     },
 
-    function () {
+        usarCentroPadrao
+    );
 
-        mapa.setView(
-            [-20.4711, -55.7874],
-            13
-        );
-
-        L.popup()
-
-            .setLatLng([
-                -20.4711,
-                -55.7874
-            ])
-
-            .setContent(
-                "Não foi possível acessar sua localização."
-            )
-
-            .openOn(mapa);
-
-    }
-
-);
+} else {
+    usarCentroPadrao();
+}
 
 
 // =========================
@@ -130,7 +135,7 @@ fetch("/api/relatos")
 
         relatos.forEach(function (relato) {
 
-            let icone;
+            let icone = azul;
 
             if (relato.status === "Em análise") {
                 icone = amarelo;
@@ -173,7 +178,7 @@ fetch("/api/relatos")
                 imagens += `
 
                     <img
-                        src="/static/uploads/${foto}"
+                        src="/static/uploads/${escaparHtml(foto)}"
                         alt="Foto do problema"
                         style="
                             width: 100%;
@@ -195,7 +200,7 @@ fetch("/api/relatos")
             marcador.bindPopup(`
                 
                 <strong>
-                    ${relato.tipo}
+                    ${escaparHtml(relato.tipo)}
                 </strong>
 
                 <br><br>
@@ -203,18 +208,18 @@ fetch("/api/relatos")
                 <strong>
                     📍 Rua:
                 </strong>
-                ${relato.rua || "Não informada"}
+                ${escaparHtml(relato.rua || "Não informada")}
 
                 <br>
 
                 <strong>
                     🏘️ Bairro:
                 </strong>
-                ${relato.bairro || "Não informado"}
+                ${escaparHtml(relato.bairro || "Não informado")}
 
                 <br><br>
 
-                ${relato.descricao}
+                ${escaparHtml(relato.descricao)}
 
                 <br><br>
 
@@ -222,7 +227,7 @@ fetch("/api/relatos")
                     Status:
                 </strong>
                 
-                ${relato.status}
+                ${escaparHtml(relato.status)}
 
                 <br>
 
@@ -230,7 +235,7 @@ fetch("/api/relatos")
                     Registrado em:
                 </strong>
                 
-                ${relato.data}
+                ${escaparHtml(relato.data)}
 
                 ${imagens}
             `);
@@ -329,7 +334,7 @@ fetch("/api/obras")
 
             let popup = `
                 <strong>
-                    ${obra.titulo}
+                    ${escaparHtml(obra.titulo)}
                 </strong>
 
                 <br><br>
@@ -337,21 +342,21 @@ fetch("/api/obras")
                 <strong>
                     📍 Rua:
                 </strong>
-                ${obra.rua || obra.localizacao || "Não informada"}
+                ${escaparHtml(obra.rua || obra.localizacao || "Não informada")}
 
                 <br>
 
                 <strong>
                     🏘️ Bairro:
                 </strong>
-                ${obra.bairro || "Não informado"}
+                ${escaparHtml(obra.bairro || "Não informado")}
 
                 <br><br>
 
                 <strong>
                     Status:
                 </strong>
-                ${obra.status}
+                ${escaparHtml(obra.status)}
             `;
 
 
@@ -365,7 +370,7 @@ fetch("/api/obras")
                         Previsão:
                     </strong>
 
-                    ${obra.previsao}
+                    ${escaparHtml(obra.previsao)}
 
                 `;
 
@@ -378,7 +383,7 @@ fetch("/api/obras")
 
                     <br><br>
 
-                    ${obra.descricao}
+                    ${escaparHtml(obra.descricao)}
 
                 `;
 

@@ -45,6 +45,18 @@ const amarelo = criarMarcador("#E8B94A");
 const verde = criarMarcador("#4CAF7D");
 const azul = criarMarcador("#5581C9");
 
+function escaparHtml(valor) {
+    return String(valor ?? "").replace(/[&<>\"']/g, function (caractere) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;"
+        }[caractere];
+    });
+}
+
 
 // =========================
 // MARCADOR DO NOVO RELATO
@@ -123,7 +135,7 @@ fetch("/api/relatos")
                     imagens += `
 
                         <img
-                            src="/static/uploads/${foto}"
+                            src="/static/uploads/${escaparHtml(foto)}"
                             alt="Foto do problema"
                             style="
                                 width: 100%;
@@ -148,12 +160,12 @@ fetch("/api/relatos")
             marcadorRelato.bindPopup(`
 
                 <strong>
-                    ${relato.tipo}
+                    ${escaparHtml(relato.tipo)}
                 </strong>
 
                 <br><br>
 
-                ${relato.descricao}
+                ${escaparHtml(relato.descricao)}
 
                 <br><br>
 
@@ -161,7 +173,7 @@ fetch("/api/relatos")
                     Status:
                 </strong>
 
-                ${relato.status}
+                ${escaparHtml(relato.status)}
 
                 <br>
 
@@ -169,7 +181,7 @@ fetch("/api/relatos")
                     Registrado em:
                 </strong>
 
-                ${relato.data}
+                ${escaparHtml(relato.data)}
 
                 ${imagens}
 
@@ -262,7 +274,7 @@ fetch("/api/obras")
             let popup = `
 
                 <strong>
-                    ${obra.titulo}
+                    ${escaparHtml(obra.titulo)}
                 </strong>
 
                 <br><br>
@@ -271,7 +283,7 @@ fetch("/api/obras")
                     Local:
                 </strong>
 
-                ${obra.localizacao}
+                ${escaparHtml(obra.localizacao)}
 
                 <br><br>
 
@@ -279,7 +291,7 @@ fetch("/api/obras")
                     Status:
                 </strong>
 
-                ${obra.status}
+                ${escaparHtml(obra.status)}
 
             `;
 
@@ -294,7 +306,7 @@ fetch("/api/obras")
                         Previsão:
                     </strong>
 
-                    ${obra.previsao}
+                    ${escaparHtml(obra.previsao)}
 
                 `;
 
@@ -307,7 +319,7 @@ fetch("/api/obras")
 
                     <br><br>
 
-                    ${obra.descricao}
+                    ${escaparHtml(obra.descricao)}
 
                 `;
 
@@ -729,8 +741,11 @@ botaoEnviar.addEventListener(
         // ENVIAR PARA FLASK
         // =========================
 
-        const resposta =
-            await fetch(
+        let resposta;
+        let resultado;
+
+        try {
+            resposta = await fetch(
                 "/enviar-relato",
                 {
                     method: "POST",
@@ -738,9 +753,37 @@ botaoEnviar.addEventListener(
                 }
             );
 
+            const tipoConteudo = resposta.headers.get("content-type") || "";
+            if (!tipoConteudo.includes("application/json")) {
+                throw new Error("A resposta do servidor não contém JSON.");
+            }
 
-        const resultado =
-            await resposta.json();
+            resultado = await resposta.json();
+        } catch (erro) {
+            console.error("Erro ao enviar o relato:", erro);
+            alert("Não foi possível enviar o relato. Verifique sua conexão e tente novamente.");
+            return;
+        }
+
+        if (!resposta.ok) {
+            const mensagemErro = resultado && typeof resultado.mensagem === "string"
+                ? resultado.mensagem
+                : "Não foi possível enviar o relato.";
+            alert(mensagemErro);
+            return;
+        }
+
+        if (
+            !resultado ||
+            typeof resultado !== "object" ||
+            Array.isArray(resultado) ||
+            typeof resultado.sucesso !== "boolean" ||
+            typeof resultado.mensagem !== "string"
+        ) {
+            console.error("Resposta inesperada ao enviar o relato:", resultado);
+            alert("O servidor retornou uma resposta inesperada. Tente novamente.");
+            return;
+        }
 
 
         // =========================
@@ -800,6 +843,10 @@ botaoEnviar.addEventListener(
             fotosSelecionadas = [];
 
             previewFotos.innerHTML = "";
+
+        } else {
+
+            alert(resultado.mensagem || "Não foi possível enviar o relato.");
 
         }
 
