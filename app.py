@@ -32,7 +32,7 @@ _modo_desenvolvimento = (
 
 if not _secret_key:
     if not _em_producao and (_modo_desenvolvimento or __name__ == "__main__" or _flask_cli):
-        _secret_key = "chave-local-apenas-desenvolvimento"
+        _secret_key = secrets.token_hex(32)
     else:
         raise RuntimeError("Configure SECRET_KEY no ambiente antes de iniciar o Flask.")
 
