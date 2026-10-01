@@ -1,7 +1,13 @@
 from flask import Flask, render_template, request, jsonify, redirect, session, g, has_app_context
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-import sqlite3
+from banco import (
+    ERRO_INTEGRIDADE,
+    ERROS_BANCO,
+    conectar_banco as _conectar_banco,
+    inicializar_banco,
+    preparar_colunas_verificacao as _preparar_colunas_verificacao,
+)
 from datetime import datetime, timedelta, timezone
 import os
 import urllib.request
@@ -56,19 +62,8 @@ MAX_CARACTERES_FEEDBACK = 2000
 
 
 def preparar_colunas_verificacao(conexao):
-    """Migra instalações existentes ao usar cadastro/login sem recriar contas."""
-    cursor = conexao.execute("PRAGMA table_info(usuarios)")
-    colunas = {linha[1] for linha in cursor.fetchall()}
-    definicoes = {
-        "email_verificado": "INTEGER NOT NULL DEFAULT 1",
-        "codigo_verificacao_hash": "TEXT",
-        "codigo_expira_em": "TEXT",
-        "codigo_ultimo_envio_em": "TEXT",
-        "codigo_tentativas": "INTEGER NOT NULL DEFAULT 0",
-    }
-    for nome, definicao in definicoes.items():
-        if nome not in colunas:
-            conexao.execute(f"ALTER TABLE usuarios ADD COLUMN {nome} {definicao}")
+    """Garante colunas de verificação em instalações existentes."""
+    _preparar_colunas_verificacao(conexao)
     conexao.commit()
 
 
@@ -224,39 +219,15 @@ def email_verificacao_expirado(valor):
 
 
 def conectar_banco():
-    conexao = sqlite3.connect("mapa_cidade.db")
-    try:
-        conexao.execute("PRAGMA foreign_keys = ON")
-        if has_app_context():
-            if not hasattr(g, "conexoes_sqlite"):
-                g.conexoes_sqlite = []
-            g.conexoes_sqlite.append(conexao)
-        return conexao
-    except Exception:
-        conexao.close()
-        raise
+    conexao = _conectar_banco()
+    if has_app_context() and not getattr(conexao, "is_postgres", False):
+        if not hasattr(g, "conexoes_sqlite"):
+            g.conexoes_sqlite = []
+        g.conexoes_sqlite.append(conexao)
+    return conexao
 
 
-def garantir_tabela_feedbacks():
-    conexao = sqlite3.connect("mapa_cidade.db")
-    try:
-        conexao.execute("PRAGMA foreign_keys = ON")
-        conexao.execute("""
-            CREATE TABLE IF NOT EXISTS feedbacks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                usuario_id INTEGER NOT NULL,
-                nota INTEGER NOT NULL CHECK (nota BETWEEN 1 AND 5),
-                comentario TEXT NOT NULL,
-                data_criacao TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-            )
-        """)
-        conexao.commit()
-    finally:
-        conexao.close()
-
-
-garantir_tabela_feedbacks()
+inicializar_banco()
 
 
 @app.teardown_appcontext
@@ -264,7 +235,7 @@ def fechar_conexoes_sqlite(erro=None):
     for conexao in getattr(g, "conexoes_sqlite", []):
         try:
             conexao.close()
-        except sqlite3.Error:
+        except ERROS_BANCO:
             pass
 
 
@@ -463,7 +434,6 @@ def codigo_foi_enviado_recentemente(valor, agora=None):
 
 def retomar_cadastro_pendente(email):
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
     try:
         preparar_colunas_verificacao(conexao)
         usuario = conexao.execute(
@@ -554,7 +524,6 @@ def cadastro():
         return render_template("cadastro.html", mensagem="Informe um e-mail valido."), 400
 
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
     usuario_existente = False
     erro_integridade = False
     try:
@@ -581,7 +550,7 @@ def cadastro():
                   data_iso(agora + TEMPO_CODIGO_VERIFICACAO)))
             usuario_id = cursor.lastrowid
             conexao.commit()
-    except sqlite3.IntegrityError:
+    except ERRO_INTEGRIDADE:
         conexao.rollback()
         erro_integridade = True
     finally:
@@ -617,7 +586,6 @@ def login():
     if not email or not senha:
         return render_template("login.html", mensagem="Preencha todos os campos."), 400
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
     try:
         preparar_colunas_verificacao(conexao)
         usuario = conexao.execute("SELECT * FROM usuarios WHERE lower(email) = ?", (email,)).fetchone()
@@ -645,7 +613,6 @@ def obter_usuario_verificacao(conexao):
     usuario_id = session.get("verificacao_usuario_id")
     if not usuario_id:
         return None
-    conexao.row_factory = sqlite3.Row
     return conexao.execute(
         "SELECT id, nome, email, email_verificado, codigo_verificacao_hash, "
         "codigo_expira_em, codigo_ultimo_envio_em, codigo_tentativas, perfil "
@@ -804,10 +771,10 @@ def enviar_feedback():
             conexao.rollback()
             return "Não foi possível enviar o feedback.", 500
         conexao.commit()
-    except sqlite3.IntegrityError:
+    except ERRO_INTEGRIDADE:
         conexao.rollback()
         return "Não foi possível enviar o feedback.", 400
-    except sqlite3.Error:
+    except ERROS_BANCO:
         conexao.rollback()
         app.logger.exception("Falha ao salvar feedback.")
         return "Não foi possível enviar o feedback.", 500
@@ -834,7 +801,7 @@ def excluir_feedback(feedback_id):
     try:
         conexao.execute("DELETE FROM feedbacks WHERE id = ?", (feedback_id,))
         conexao.commit()
-    except sqlite3.Error:
+    except ERROS_BANCO:
         conexao.rollback()
         app.logger.exception("Falha ao excluir feedback.")
     finally:
@@ -852,7 +819,6 @@ def mapa():
 def obras():
 
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
     cursor = conexao.cursor()
 
     cursor.execute("""
@@ -1081,7 +1047,6 @@ def apagar_relato(id):
 def api_relatos():
 
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
 
     cursor = conexao.cursor()
 
@@ -1129,7 +1094,6 @@ def api_relatos():
 def buscar_solicitacoes_usuario(usuario_id=None):
     """Busca apenas os relatos e fotos vinculados ao ID do usuário."""
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
     cursor = conexao.cursor()
 
     try:
@@ -1181,7 +1145,6 @@ def cancelar_relato(relato_id):
         }), 401
 
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
     cursor = conexao.cursor()
 
     cursor.execute("""
@@ -1379,7 +1342,6 @@ def admin():
         return redirect("/")
 
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
     cursor = conexao.cursor()
 
     cursor.execute("""
@@ -1433,7 +1395,6 @@ def admin():
 def api_obras():
 
     conexao = conectar_banco()
-    conexao.row_factory = sqlite3.Row
 
     cursor = conexao.cursor()
 

@@ -4,6 +4,9 @@
 
 body {
     margin: 0;
+    display: block;
+    height: auto;
+    min-height: 0;
     font-family: Arial, sans-serif;
     background-color: #F3F5F7;
     color: #263238;
@@ -60,6 +63,9 @@ body {
 ========================= */
 
 main {
+    display: block;
+    height: auto;
+    min-height: 0;
     max-width: 1200px;
     margin: 0 auto;
     padding: 60px 50px;
@@ -188,6 +194,8 @@ main {
 ========================= */
 
 .sem-solicitacoes {
+    
+    margin-bottom: 247px;
     background: #FFFFFF;
 
     border: 1px solid #E5E7EB;
@@ -221,6 +229,7 @@ main {
     text-decoration: none;
     font-weight: bold;
 }
+
 
 /* =========================
    FOTOS
@@ -414,6 +423,10 @@ main {
 }
 
 @media (max-width: 420px) {
+    .sem-solicitacoes {
+        margin-top: 80px;
+    }
+
     .topo-card {
         align-items: flex-start;
         flex-direction: column;

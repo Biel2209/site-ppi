@@ -1,2 +1,8 @@
 .vercel
 .env*
+
+__pycache__/
+*.pyc
+
+mapa_cidade.db
+mapa_cidade_backup_local.db
