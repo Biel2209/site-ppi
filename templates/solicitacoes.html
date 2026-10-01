@@ -11,16 +11,16 @@
         <div class="logo">FalaCidade</div>
         <nav class="menu" aria-label="Navegação principal">
             <a href="/">Início</a>
-            <a href="/mapa">Mapa</a>
-            <a href="/obras">Obras</a>
-            <a href="/relatar">Relatar problema</a>
+            <a href="/mapa">&#8982; Mapa</a>
+            <a href="/obras">&#9638; Obras</a>
+            <a href="/relatar">&#43; Relatar problema</a>
             <a href="/solicitacoes" class="ativo">Minhas solicitações</a>
             {% if session.get("usuario_id") %}
                 {% if perfil_admin %}<a href="/admin">Administração</a>{% endif %}
                 <span class="usuario">Olá, {{ session.get("usuario_nome", "") }}</span>
-                <a href="/logout">Sair</a>
+                <a href="/logout">&#8627; Sair</a>
             {% else %}
-                <a href="/login">Entrar</a>
+                <a href="/login">&#8594; Entrar</a>
             {% endif %}
         </nav>
     </header>

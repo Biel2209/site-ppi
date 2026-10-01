@@ -19,6 +19,8 @@
 
         <div class="login-card">
 
+            <a class="link-voltar" href="{{ url_for('inicio') }}" aria-label="Voltar para a página inicial">&#8592; Voltar</a>
+
             <h1>
                 Entrar
             </h1>
@@ -54,15 +56,15 @@
                 >
 
                 <button type="submit">
-                    Entrar
+                    <span aria-hidden="true">&#8594;</span> Entrar
                 </button>
 
             </form>
 
             <p class="cadastro-link">
                 Ainda não possui uma conta?
-                <a href="/cadastro">
-                    Criar conta
+                <a href="{{ url_for('cadastro') }}">
+                    &#10010; Criar conta
                 </a>
             </p>
 

@@ -32,6 +32,19 @@ body {
     font-size: 30px;
 }
 
+.link-voltar {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #456FAF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link-voltar:focus-visible, a:focus-visible, button:focus-visible {
+    outline: 3px solid #263238;
+    outline-offset: 3px;
+}
+
 .cadastro-card > p {
     margin: 0 0 30px;
     color: #5F6B72;
