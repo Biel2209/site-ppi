@@ -52,6 +52,7 @@ FORMATOS_FOTO = {
 TEMPO_CODIGO_VERIFICACAO = timedelta(minutes=10)
 INTERVALO_REENVIO_CODIGO = timedelta(seconds=60)
 MAX_TENTATIVAS_CODIGO = 5
+MAX_CARACTERES_FEEDBACK = 2000
 
 
 def preparar_colunas_verificacao(conexao):
@@ -234,6 +235,28 @@ def conectar_banco():
     except Exception:
         conexao.close()
         raise
+
+
+def garantir_tabela_feedbacks():
+    conexao = sqlite3.connect("mapa_cidade.db")
+    try:
+        conexao.execute("PRAGMA foreign_keys = ON")
+        conexao.execute("""
+            CREATE TABLE IF NOT EXISTS feedbacks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                usuario_id INTEGER NOT NULL,
+                nota INTEGER NOT NULL CHECK (nota BETWEEN 1 AND 5),
+                comentario TEXT NOT NULL,
+                data_criacao TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+            )
+        """)
+        conexao.commit()
+    finally:
+        conexao.close()
+
+
+garantir_tabela_feedbacks()
 
 
 @app.teardown_appcontext
@@ -724,6 +747,99 @@ def logout():
     session.clear()
 
     return redirect("/")
+
+
+@app.route("/feedback", methods=["GET"])
+def feedback():
+    if not session.get("usuario_id"):
+        return redirect("/login")
+    return render_template(
+        "feedback.html",
+        mensagem=session.pop("feedback_mensagem", None),
+        nota_selecionada=None,
+    )
+
+
+@app.route("/enviar-feedback", methods=["POST"])
+def enviar_feedback():
+    usuario_id = session.get("usuario_id")
+    if not usuario_id:
+        return redirect("/login")
+    try:
+        usuario_id = int(usuario_id)
+    except (TypeError, ValueError):
+        session.pop("usuario_id", None)
+        return redirect("/login")
+    if not 1 <= usuario_id <= 9_223_372_036_854_775_807:
+        session.pop("usuario_id", None)
+        return redirect("/login")
+
+    nota_recebida = request.form.get("nota", "")
+    comentario = request.form.get("comentario", "").strip()
+    mensagem_erro = None
+    nota = None
+    if not re.fullmatch(r"[1-5]", nota_recebida):
+        mensagem_erro = "Selecione uma nota de 1 a 5 estrelas."
+    else:
+        nota = int(nota_recebida)
+    if not mensagem_erro and not comentario:
+        mensagem_erro = "Escreva um comentário antes de enviar."
+    elif not mensagem_erro and len(comentario) > MAX_CARACTERES_FEEDBACK:
+        mensagem_erro = f"O comentário deve ter no máximo {MAX_CARACTERES_FEEDBACK} caracteres."
+    if mensagem_erro:
+        return render_template(
+            "feedback.html",
+            mensagem=mensagem_erro,
+            comentario=comentario[:MAX_CARACTERES_FEEDBACK],
+            nota_selecionada=nota,
+        ), 400
+
+    conexao = conectar_banco()
+    try:
+        cursor = conexao.execute(
+            "INSERT INTO feedbacks (usuario_id, nota, comentario) VALUES (?, ?, ?)",
+            (usuario_id, nota, comentario),
+        )
+        if cursor.rowcount != 1:
+            conexao.rollback()
+            return "Não foi possível enviar o feedback.", 500
+        conexao.commit()
+    except sqlite3.IntegrityError:
+        conexao.rollback()
+        return "Não foi possível enviar o feedback.", 400
+    except sqlite3.Error:
+        conexao.rollback()
+        app.logger.exception("Falha ao salvar feedback.")
+        return "Não foi possível enviar o feedback.", 500
+    finally:
+        conexao.close()
+
+    session["feedback_mensagem"] = "Feedback enviado com sucesso. Obrigado por ajudar a melhorar o FalaCidade!"
+    return redirect("/feedback")
+
+
+@app.route("/excluir-feedback/<feedback_id>", methods=["POST"])
+def excluir_feedback(feedback_id):
+    if session.get("usuario_perfil") != "admin":
+        return redirect("/")
+    if not re.fullmatch(r"[1-9][0-9]*", feedback_id):
+        return redirect("/admin")
+    try:
+        feedback_id = int(feedback_id)
+    except ValueError:
+        return redirect("/admin")
+    if feedback_id > 9_223_372_036_854_775_807:
+        return redirect("/admin")
+    conexao = conectar_banco()
+    try:
+        conexao.execute("DELETE FROM feedbacks WHERE id = ?", (feedback_id,))
+        conexao.commit()
+    except sqlite3.Error:
+        conexao.rollback()
+        app.logger.exception("Falha ao excluir feedback.")
+    finally:
+        conexao.close()
+    return redirect("/admin")
 
 
 @app.route("/mapa")
@@ -1282,6 +1398,15 @@ def admin():
 
     relatos = cursor.fetchall()
 
+    cursor.execute("""
+        SELECT f.id, f.nota, f.comentario, f.data_criacao,
+               u.nome AS usuario_nome, u.email AS usuario_email
+        FROM feedbacks AS f
+        JOIN usuarios AS u ON u.id = f.usuario_id
+        ORDER BY f.data_criacao DESC, f.id DESC
+    """)
+    feedbacks = cursor.fetchall()
+
     fotos_por_relato = {}
 
     for relato in relatos:
@@ -1300,7 +1425,8 @@ def admin():
         "admin.html",
         obras=obras,
         relatos=relatos,
-        fotos_por_relato=fotos_por_relato
+        fotos_por_relato=fotos_por_relato,
+        feedbacks=feedbacks,
     )
 
 @app.route("/api/obras")

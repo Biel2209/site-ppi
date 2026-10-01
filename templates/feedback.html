@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar feedback - FalaCidade</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/feedback.css') }}">
+</head>
+<body>
+    <header class="header">
+        <a class="logo" href="/">FalaCidade</a>
+        <nav class="menu" aria-label="Navegação principal">
+            <a href="/">Início</a>
+            <a href="/mapa">Mapa</a>
+            <a href="/obras">Obras</a>
+            <a href="/relatar">Relatar problema</a>
+            <a href="/solicitacoes">Minhas solicitações</a>
+            {% if session.get("usuario_perfil") == "admin" %}<a href="/admin">Administração</a>{% endif %}
+            <span class="usuario">Olá, {{ session.get("usuario_nome", "") }}</span>
+            <a href="/logout">Sair</a>
+        </nav>
+    </header>
+
+    <main class="conteudo">
+        <section class="cartao-feedback" aria-labelledby="titulo-feedback">
+            <span class="subtitulo">SUA OPINIÃO</span>
+            <h1 id="titulo-feedback">Enviar feedback</h1>
+            <p class="explicacao">Seu feedback ajuda a melhorar o FalaCidade.</p>
+
+            {% if mensagem %}<p class="mensagem" role="status">{{ mensagem }}</p>{% endif %}
+
+            <form action="/enviar-feedback" method="post">
+                <fieldset class="campo-nota">
+                    <legend>Como você avalia sua experiência?</legend>
+                    <div class="estrelas" role="radiogroup" aria-label="Avaliação de uma a cinco estrelas">
+                        {% for valor in range(1, 6) %}
+                            <input type="radio" id="nota-{{ valor }}" name="nota" value="{{ valor }}" required {% if nota_selecionada == valor %}checked{% endif %}>
+                            <label for="nota-{{ valor }}" data-nota="{{ valor }}" aria-label="{{ valor }} de 5 estrelas">☆</label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+
+                <label class="rotulo-comentario" for="comentario">Comentário</label>
+                <textarea id="comentario" name="comentario" maxlength="2000" required placeholder="Conte o que você achou do FalaCidade...">{{ comentario or '' }}</textarea>
+                <p class="ajuda">Até 2.000 caracteres.</p>
+                <button type="submit">Enviar feedback</button>
+            </form>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/feedback.js') }}" defer></script>
+</body>
+</html>

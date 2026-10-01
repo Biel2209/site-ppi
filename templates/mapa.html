@@ -35,7 +35,6 @@
             <a href="/solicitacoes">Minhas solicitações</a>
 
             {% if session.get("usuario_id") %}
-
                 {% if session.get("usuario_perfil") == "admin" %}
                     <a href="/admin">
                         Administração

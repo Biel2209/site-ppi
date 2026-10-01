@@ -50,7 +50,6 @@
             </a>
 
             {% if session.get("usuario_id") %}
-
                 {% if session.get("usuario_perfil") == "admin" %}
 
                     <a href="/admin" class="ativo">
@@ -744,6 +743,41 @@
 
             {% endif %}
 
+        </section>
+
+        <section class="feedback-admin" aria-labelledby="titulo-feedback-admin">
+            <div class="titulo-secao-feedback">
+                <div>
+                    <span class="subtitulo">OPINIÃO DOS USUÁRIOS</span>
+                    <h2 id="titulo-feedback-admin">Feedbacks dos usuários</h2>
+                </div>
+                <span>{{ feedbacks|length }} feedback(s)</span>
+            </div>
+
+            {% if feedbacks %}
+                <div class="lista-feedback-admin">
+                    {% for feedback in feedbacks %}
+                        <article class="card-feedback-admin">
+                            <div class="topo-feedback-admin">
+                                <div>
+                                    <strong>{{ feedback['usuario_nome'] }}</strong>
+                                    <a href="mailto:{{ feedback['usuario_email'] }}">{{ feedback['usuario_email'] }}</a>
+                                </div>
+                                <span class="nota-feedback" aria-label="Nota {{ feedback['nota'] }} de 5">{{ feedback['nota'] }}/5</span>
+                            </div>
+                            <p class="comentario-feedback">{{ feedback['comentario'] }}</p>
+                            <div class="rodape-feedback-admin">
+                                <time>{{ feedback['data_criacao'] }}</time>
+                                <form action="{{ url_for('excluir_feedback', feedback_id=feedback['id']) }}" method="post" onsubmit="return confirm('Excluir este feedback?');">
+                                    <button class="botao-excluir-feedback" type="submit">Excluir feedback</button>
+                                </form>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="sem-feedbacks">Ainda não há feedbacks recebidos.</p>
+            {% endif %}
         </section>
 
     </main>

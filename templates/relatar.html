@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/relatar.css') }}">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 </head>
 
 <body>
@@ -33,7 +34,6 @@
             <a href="/solicitacoes">Minhas solicitações</a>
 
             {% if session.get("usuario_id") %}
-
                 {% if session.get("usuario_perfil") == "admin" %}
                     <a href="/admin">
                         Administração
@@ -266,6 +266,21 @@
 
     </main>
 
+
+    <footer class="footer">
+        <div class="footer-conteudo">
+            <div>
+                <strong>FalaCidade</strong>
+                <p>Informações sobre obras e infraestrutura pública.</p>
+            </div>
+            <div class="footer-feedback">
+                <a href="{{ url_for('feedback') }}">Feedback</a>
+            </div>
+            <div class="footer-direitos">
+                <p>Projeto acadêmico</p>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 

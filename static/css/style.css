@@ -285,37 +285,6 @@ main {
 
 /* RODAPÉ */
 
-.footer {
-    background-color: #263238;
-    color: #FFFFFF;
-
-    padding: 35px 50px;
-}
-
-.footer-conteudo {
-    max-width: 1200px;
-    margin: 0 auto;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.footer strong {
-    font-size: 18px;
-}
-
-.footer p {
-    margin: 8px 0 0;
-
-    color: #C7CED2;
-    font-size: 14px;
-}
-
-.footer-direitos p {
-    margin: 0;
-}
-
 /* =========================
    MARCADORES DO MAPA
 ========================= */

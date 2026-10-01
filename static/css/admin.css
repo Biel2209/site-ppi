@@ -348,6 +348,128 @@ body {
 }
 
 /* =========================
+   FEEDBACK DOS USUÁRIOS
+========================= */
+
+.feedback-admin {
+    margin-top: 52px;
+}
+
+.titulo-secao-feedback {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.titulo-secao-feedback h2 {
+    margin-top: 6px;
+}
+
+.titulo-secao-feedback > span {
+    color: #68747c;
+    font-size: 13px;
+}
+
+.lista-feedback-admin {
+    display: grid;
+    gap: 14px;
+}
+
+.card-feedback-admin {
+    padding: 20px;
+    border: 1px solid #e3e7eb;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.topo-feedback-admin,
+.rodape-feedback-admin {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.topo-feedback-admin > div {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.topo-feedback-admin a,
+.rodape-feedback-admin time {
+    color: #68747c;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.nota-feedback {
+    flex: 0 0 auto;
+    padding: 7px 11px;
+    border-radius: 20px;
+    background: #fff4d6;
+    color: #8b6715;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.comentario-feedback {
+    margin: 16px 0;
+    color: #45535b;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.rodape-feedback-admin {
+    padding-top: 12px;
+    border-top: 1px solid #edf0f2;
+}
+
+.botao-excluir-feedback {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #e5b9b7;
+    border-radius: 7px;
+    background: #fff;
+    color: #b53f3a;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-excluir-feedback:hover {
+    border-color: #b53f3a;
+    background: #fff5f4;
+}
+
+.sem-feedbacks {
+    padding: 22px;
+    border: 1px solid #e3e7eb;
+    border-radius: 12px;
+    background: #fff;
+    color: #68747c;
+}
+
+@media (max-width: 600px) {
+    .titulo-secao-feedback {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .card-feedback-admin {
+        padding: 16px;
+    }
+
+    .rodape-feedback-admin {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* =========================
    FILTROS ADMINISTRATIVOS
 ========================= */
 

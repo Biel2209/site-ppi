@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if perfil_admin %}Solicitações - FalaCidade{% else %}Minhas solicitações - FalaCidade{% endif %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/solicitacoes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
 </head>
 <body>
     <header class="header">
@@ -106,6 +107,21 @@
             </div>
         </div>
     </div>
+    <footer class="footer">
+        <div class="footer-conteudo">
+            <div>
+                <strong>FalaCidade</strong>
+                <p>Informações sobre obras e infraestrutura pública.</p>
+            </div>
+            <div class="footer-feedback">
+                <a href="{{ url_for('feedback') }}">Feedback</a>
+            </div>
+            <div class="footer-direitos">
+                <p>Projeto acadêmico</p>
+            </div>
+        </div>
+    </footer>
+
     <script src="{{ url_for('static', filename='js/solicitacoes.js') }}"></script>
 </body>
 </html>

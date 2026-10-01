@@ -122,6 +122,21 @@ def criar_banco():
             )
 
     # =========================
+    # TABELA DE FEEDBACKS
+    # =========================
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS feedbacks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            nota INTEGER NOT NULL CHECK (nota BETWEEN 1 AND 5),
+            comentario TEXT NOT NULL,
+            data_criacao TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        )
+    """)
+
+    # =========================
     # TABELA DE OBRAS
     # =========================
 
